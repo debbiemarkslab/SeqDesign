@@ -5,8 +5,8 @@ import numpy as np
 import time
 import sys, os
 
-from SeqDesign import hyper_conv_auto as model
-from SeqDesign import helper
+from seqdesign import hyper_conv_auto as model
+from seqdesign import helper
 
 
 def main(input_filename, output_filename):

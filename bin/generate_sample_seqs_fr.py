@@ -6,8 +6,8 @@ import time
 import sys, os
 sys.path.append("../code/")
 
-from SeqDesign import hyper_conv_auto as model
-from SeqDesign import helper
+from seqdesign import hyper_conv_auto as model
+from seqdesign import helper
 
 working_dir = ".."
 

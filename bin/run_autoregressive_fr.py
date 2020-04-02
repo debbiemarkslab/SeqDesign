@@ -6,8 +6,8 @@ import platform
 import time
 import sys, os
 
-from SeqDesign import hyper_conv_auto as model
-from SeqDesign import helper
+from seqdesign import hyper_conv_auto as model
+from seqdesign import helper
 
 parser = argparse.ArgumentParser(description="Train an autoregressive model on a collection of sequences.")
 parser.add_argument("--channels", type=int, default=48, help="Number of channels.")

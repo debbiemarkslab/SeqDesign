@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from SeqDesign import birch
+from seqdesign import birch
 import sys
 
 # Hyperparameters
