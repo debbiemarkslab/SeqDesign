@@ -24,5 +24,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 2",
     ],
-    python_requires='==2.7',
+    python_requires='2.7',
 )
