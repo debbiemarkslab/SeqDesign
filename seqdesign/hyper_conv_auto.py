@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np
-from SeqDesign import layers_auto_b as mpnn_layers
+from seqdesign import layers_auto_b as mpnn_layers
 
 
 class AutoregressiveFR:

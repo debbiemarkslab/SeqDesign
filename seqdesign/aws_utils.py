@@ -1,7 +1,7 @@
 import subprocess
 import re
 import os
-from SeqDesign.version import VERSION
+from seqdesign.version import VERSION
 
 S3_FOLDER_URL = "s3://markslab-private/autoregressive"
 

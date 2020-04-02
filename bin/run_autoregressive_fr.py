@@ -8,7 +8,7 @@ import subprocess
 start_run_time = time.time()
 import tensorflow as tf
 import numpy as np
-import version
+from seqdesign import version
 
 parser = argparse.ArgumentParser(description="Train an autoregressive model on a collection of sequences.")
 parser.add_argument("--run-version", type=str, default=version.VERSION, metavar='V',

@@ -8,7 +8,7 @@ from collections import defaultdict
 import glob
 import time
 
-from SeqDesign import aws_utils
+from seqdesign import aws_utils
 
 
 class DataHelperSingleFamily:
