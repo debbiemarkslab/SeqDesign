@@ -1,4 +1,3 @@
-python=2.7
-tensorflow-gpu=1.12
+tensorflow-gpu==1.12
 scipy
 scikit-learn
