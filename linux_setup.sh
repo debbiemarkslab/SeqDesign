@@ -9,8 +9,9 @@ if [ ! -f "/proc/driver/nvidia/version" ]; then
   echo "NVIDIA driver not found; installing."
   sudo apt update
   sudo apt install -y --no-install-recommends nvidia-driver-430
-  echo "NVIDIA drivers installed."
-  echo "Please reboot your system, then run linux_setup.sh a second time."
+  echo "
+NVIDIA drivers installed.
+Please reboot your system, then run linux_setup.sh a second time."
   exit
 fi
 
@@ -31,7 +32,9 @@ $HOME/miniconda2/envs/seqdesign/bin/python setup.py install  # use setup.py deve
 cd examples || exit
 ./download_example_data.sh
 
-echo "SeqDesign installed. Run 'source ~/.bashrc; conda activate seqdesign' before using."
+echo "
+SeqDesign installed.
+Run 'source ~/.bashrc; conda activate seqdesign' before using."
 
 # # to run training demo:
 # ./demo_train.sh
