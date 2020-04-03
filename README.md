@@ -27,3 +27,12 @@ Tested on Ubuntu 18.04 LTS and CentOS 7.2
 ## Examples
 
 See [examples/README.md](examples/README.md)
+
+
+## Usage
+
+### Training
+
+Given a fasta file of training sequences, run:
+
+> run_autoregressive_fr <your_dataset>.fa

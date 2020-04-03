@@ -41,4 +41,8 @@ On an AWS p2.xlarge instance, this demonstration took 7 minutes.
 ## Generating nanobody libraries
 > ./demo_generate.sh
 
+This will generate nanobody CDR3 and FRA4 sequences given a preceding VH sequence.
+The full nanobody sequences will be output in
+`generated/nanobody.ckpt-250000_temp-1.0_rseed-42.fa` 
 
+On an AWS p2.xlarge instance, this demonstration took 6.5 minutes.
