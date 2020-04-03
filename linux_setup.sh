@@ -6,11 +6,11 @@
 # If NVIDIA drivers have not been installed before, this script must be run twice, rebooting the system in between.
 
 if [ ! -f "/proc/driver/nvidia/version" ]; then
+  echo "NVIDIA driver not found; installing."
   sudo apt update
   sudo apt install -y --no-install-recommends nvidia-driver-430
-  echo "Please reboot your system, then run linux_setup a second time."
+  echo "Please reboot your system, then run linux_setup.sh a second time."
   exit
-  # Reboot.
 fi
 
 # set up conda and the SeqDesign environment
@@ -24,7 +24,7 @@ python -c "from tensorflow.python.client import device_lib; print device_lib.lis
 
 # download SeqDesign code
 # git clone https://github.com/debbiemarkslab/SeqDesign.git
-cd SeqDesign || exit
+# cd SeqDesign || exit
 python setup.py install  # use setup.py develop if you want to modify the code files
 
 # download demo/example data
