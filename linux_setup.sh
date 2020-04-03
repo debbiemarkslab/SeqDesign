@@ -41,3 +41,6 @@ Run 'source ~/.bashrc; conda activate seqdesign' before using."
 
 # # to run calc_logprobs using trained weights:
 # ./demo_calc_logprobs.sh
+
+# # to generate sequences:
+# ./demo_generate.sh
