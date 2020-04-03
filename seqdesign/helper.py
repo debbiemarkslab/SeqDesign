@@ -891,7 +891,7 @@ class DataHelperDoubleWeightingNanobody:
         self.cluster_id80_to_dict_of_cluster_id90_to_sequence_name_lists = {}
         self.cluster_id80_to_dict_of_cluster_id90_to_cluster_size = {}
 
-        INPUT = open(self.working_dir+'/datasets/'+self.alignment_file,'r')
+        INPUT = open(self.working_dir+'/datasets/nanobodies/'+self.alignment_file,'r')
         for line in INPUT:
             line = line.rstrip()
 
