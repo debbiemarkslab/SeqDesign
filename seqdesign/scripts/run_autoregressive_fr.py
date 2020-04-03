@@ -14,14 +14,14 @@ def main(working_dir='.'):
     tf.logging.set_verbosity(tf.logging.ERROR)
 
     parser = argparse.ArgumentParser(description="Train an autoregressive model on a collection of sequences.")
-    parser.add_argument("--dataset", type=str, default=None, required=True,
+    parser.add_argument("--dataset", type=str, required=True,
                         help="Dataset name for fitting model. Alignment weights must be computed beforehand.")
     parser.add_argument("--channels", type=int, default=48,
                         help="Number of channels.")
     parser.add_argument("--num-iterations", type=int, default=250005,
                         help="Number of iterations to run the model.")
     parser.add_argument("--snapshot-interval", type=int, default=None,
-                        help="Number of iterations to run the model.")
+                        help="Number of iterations between saved checkpoints.")
     parser.add_argument("--restore", type=str, default='',
                         help="Session name for restoring a model to continue training.")
     parser.add_argument("--r-seed", type=int, default=42,

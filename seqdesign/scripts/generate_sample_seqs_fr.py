@@ -10,6 +10,8 @@ from seqdesign import helper
 
 
 def main():
+    tf.logging.set_verbosity(tf.logging.ERROR)
+
     parser = argparse.ArgumentParser(description="Calculate the log probability of mutated sequences.")
     parser.add_argument("--sess", type=str, required=True, help="Session name for restoring a model.")
     parser.add_argument("--r-seed", type=int, default=42, help="Random seed.")
@@ -32,7 +34,7 @@ def main():
     temp = args.temp
     r_seed = args.r_seed
 
-    print r_seed, type(r_seed)
+    print r_seed
 
     np.random.seed(r_seed)
 
