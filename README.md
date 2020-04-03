@@ -26,7 +26,7 @@ Tested on Ubuntu 18.04 LTS and CentOS 7.2
 
 ## Examples
 
-See [examples/README.md](examples/README.md)
+See the [examples](examples) directory.
 
 
 ## Usage
