@@ -4,9 +4,9 @@
 # Before running this script, first run `git clone https://github.com/debbiemarkslab/SeqDesign.git`
 # and then `cd SeqDesign`
 
-sudo apt update
-sudo apt install -y --no-install-recommends nvidia-driver-430
-# Reboot.
+#sudo apt update
+#sudo apt install -y --no-install-recommends nvidia-driver-430
+## Reboot.
 
 # set up conda and the SeqDesign environment
 wget https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh
@@ -26,5 +26,8 @@ python setup.py install  # use setup.py develop if you want to modify the code f
 cd examples || exit
 ./download_example_data.sh
 
-# run training demo
-./demo_train.sh
+# # to run training demo:
+# ./demo_train.sh
+
+# # to run calc_logprobs using trained weights:
+# ./demo_calc_logprobs.sh
