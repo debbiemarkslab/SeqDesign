@@ -1,8 +1,6 @@
 import numpy as np
 import tensorflow as tf
-#import theano
 import scipy
-#import theano.tensor as T
 from collections import defaultdict
 import glob
 import time
@@ -24,7 +22,7 @@ class DataHelperSingleFamily:
         self.working_dir = working_dir
         self.calc_weights = calc_weights
         self.alphabet_type = alphabet_type
-        self.max_seq_len=max_seq_len
+        self.max_seq_len = max_seq_len
         # Alignment processing parameters
         self.theta = theta
 
@@ -61,7 +59,6 @@ class DataHelperSingleFamily:
 
     def gen_alignment_mut_data(self):
 
-
         ix = np.array([self.alphabet.find(s) for s in self.reorder_alphabet])
 
         self.family_name_to_sequence_encoder_list = {}
@@ -78,8 +75,11 @@ class DataHelperSingleFamily:
 
         max_seq_len = 0
         max_family_size = 0
-        for filename in glob.glob(self.working_dir+'/datasets/sequences/'+self.dataset+'*.fa'):
-            INPUT = open(filename,'r')
+        filenames = glob.glob(self.working_dir+'/datasets/sequences/'+self.dataset+'*.fa')
+        if not filenames:
+            raise Exception("Could not find dataset files.")
+        for filename in filenames:
+            INPUT = open(filename, 'r')
 
             encoder_sequence_list = []
             decoder_input_sequence_list = []

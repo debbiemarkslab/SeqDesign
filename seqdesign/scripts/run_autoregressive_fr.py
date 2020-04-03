@@ -11,26 +11,39 @@ from seqdesign import helper
 
 
 def main(working_dir='.'):
+    tf.logging.set_verbosity(tf.logging.ERROR)
+
     parser = argparse.ArgumentParser(description="Train an autoregressive model on a collection of sequences.")
-    parser.add_argument("--channels", type=int, default=48, help="Number of channels.")
-    parser.add_argument("--num_iterations", type=int, default=250005, help="Number of iterations to run the model.")
-    parser.add_argument("--dataset", type=str, default=None, help="Dataset name for fitting model. Alignment weights must be computed beforehand.")
-    parser.add_argument("--restore", type=str, default='', help="Session name for restoring a model to continue training.")
-    parser.add_argument("--r_seed", type=int, default=42,  help="Random seed for parameter initialization and minibatch sampling.")
+    parser.add_argument("--dataset", type=str, default=None, required=True,
+                        help="Dataset name for fitting model. Alignment weights must be computed beforehand.")
+    parser.add_argument("--channels", type=int, default=48,
+                        help="Number of channels.")
+    parser.add_argument("--num_iterations", type=int, default=250005,
+                        help="Number of iterations to run the model.")
+    parser.add_argument("--snapshot_interval", type=int, default=None,
+                        help="Number of iterations to run the model.")
+    parser.add_argument("--restore", type=str, default='',
+                        help="Session name for restoring a model to continue training.")
+    parser.add_argument("--r_seed", type=int, default=42,
+                        help="Random seed for parameter initialization and minibatch sampling.")
     ARGS = parser.parse_args()
 
     tf.set_random_seed(ARGS.r_seed)
 
     print ARGS.restore
 
-    data_helper = helper.DataHelperSingleFamily(working_dir=working_dir,dataset=ARGS.dataset,r_seed=ARGS.r_seed)
+    data_helper = helper.DataHelperSingleFamily(working_dir=working_dir, dataset=ARGS.dataset, r_seed=ARGS.r_seed)
 
     # Variables for runtime modification
     batch_size = 30
-    fitness_check = 25000
-    fitness_start = 29999
-    num_iterations = int(ARGS.num_iterations)
-    N_pred_iterations=50
+    if ARGS.snapshot_interval is not None:
+        fitness_check = ARGS.snapshot_interval
+        fitness_start = 1
+    else:
+        fitness_check = 25000
+        fitness_start = 29999
+    num_iterations = ARGS.num_iterations
+    N_pred_iterations = 50
 
     plot_train = 100
     dropout_p_train = 0.5
@@ -46,7 +59,7 @@ def main(working_dir='.'):
     params = tf.trainable_variables()
     p_counts = [np.prod(v.get_shape().as_list()) for v in params]
     p_total = sum(p_counts)
-    print "Total parameter number:",p_total,"\n"
+    print "Total parameter number:", p_total, "\n"
 
     saver = tf.train.Saver()
 

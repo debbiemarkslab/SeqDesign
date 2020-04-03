@@ -10,6 +10,7 @@ from seqdesign import helper
 
 
 def main(input_filename, output_filename):
+    tf.logging.set_verbosity(tf.logging.ERROR)
 
     data_helper = helper.DataHelperDoubleWeightingNanobody()
 

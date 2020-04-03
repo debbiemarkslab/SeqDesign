@@ -24,5 +24,13 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 2",
     ],
-    python_requires='2.7',
+    python_requires='==2.7',
+    scripts=[
+        "bin/calc_logprobs_seqs_fr",
+        "bin/calc_logprobs_seqs_nanobody",
+        "bin/generate_sample_seqs_fr",
+        "bin/library_selection_birch",
+        "bin/process_output_sequences",
+        "bin/run_autoregressive_fr",
+    ],
 )

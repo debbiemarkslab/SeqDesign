@@ -10,6 +10,8 @@ from seqdesign import helper
 
 
 def main():
+    tf.logging.set_verbosity(tf.logging.ERROR)
+
     parser = argparse.ArgumentParser(description="Calculate the log probability of mutated sequences.")
     parser.add_argument("--channels", type=int, default=48, help="Number of channels.")
     parser.add_argument("--r_seed", type=int, default=-1, help="Random seed.")
