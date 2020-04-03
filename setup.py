@@ -6,13 +6,13 @@ with open("README.md", "r") as fh:
 
 
 setuptools.setup(
-    name="SeqDesign",
+    name="seqdesign",
     version="0.0.1",
     author="Aaron Kollasch",
     author_email="awkollasch@gmail.com",
     description=("Biological sequence design for antibodies using deep learning"),
     license="MIT",
-    keywords="autoregressive protein model generative",
+    keywords="autoregressive protein sequence design deep learning",
     url="https://github.com/debbiemarkslab/seqdesign",
     packages=setuptools.find_packages(),
     long_description=long_description,
