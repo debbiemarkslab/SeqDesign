@@ -1,2 +1,2 @@
 #!/bin/bash
-run_autoregressive_fr --dataset BLAT_ECOLX --channels 48 --r_seed 11 --num_iterations 100 --snapshot_interval 100
+run_autoregressive_fr --dataset BLAT_ECOLX --channels 48 --r-seed 11 --num-iterations 100 --snapshot-interval 100
