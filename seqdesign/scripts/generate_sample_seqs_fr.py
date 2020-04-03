@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys
+import os
 import time
 import argparse
 import tensorflow as tf
@@ -38,8 +38,10 @@ def main():
 
     alphabet_list = list(data_helper.alphabet)
 
+    if not os.path.exists(os.path.join(working_dir, 'generated')):
+        os.makedirs(os.path.join(working_dir, 'generated'))
     output_filename = (
-            working_dir + "/output/" + args.sess + "_temp-" + str(temp) + "_rseed-" + str(r_seed) + ".fa"
+            working_dir + "/generated/" + args.sess + "_temp-" + str(temp) + "_rseed-" + str(r_seed) + ".fa"
     )
     OUTPUT = open(output_filename, "w")
     OUTPUT.close()
