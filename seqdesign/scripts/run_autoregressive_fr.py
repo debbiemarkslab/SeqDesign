@@ -107,6 +107,8 @@ def main(working_dir='.'):
             prot_decoder_input_r, prot_decoder_output_r, prot_mask_decoder_r, \
                 family_one_hot_r, Neff_r = data_helper.generate_one_family_minibatch_data(batch_size, reverse=True)
 
+            data_load_time = time.time() - start
+
             feed_dict = {conv_model.placeholders["sequences_start_f"]: prot_decoder_input_f,\
                 conv_model.placeholders["sequences_stop_f"]: prot_decoder_output_f,\
                 conv_model.placeholders["mask_decoder_1D_f"]: prot_mask_decoder_f,\
@@ -123,14 +125,18 @@ def main(working_dir='.'):
                 conv_model.tensors["cross_entropy_loss"],conv_model.tensors["loss"],\
                 conv_model.tensors["KL_embedding_loss"]],feed_dict=feed_dict)
 
+            print (
+                '{global_step:7} {time_delta:0.3f} {data_load_time:0.3f} '
+                '{ce_loss:10.4f} {loss:10.4f} {KL_embedding_loss:10.4f}'.format(
+                    global_step=global_step, time_delta=time.time() - start,
+                    data_load_time=data_load_time, ce_loss=ce_loss, loss=loss, KL_embedding_loss=KL_embedding_loss,
+                )
+            )
             print global_step, time.time() - start,ce_loss,loss,KL_embedding_loss
 
             if global_step % plot_train == 0:
                 train_writer.add_summary(summary, global_step)
 
-            print global_step
-            print type(global_step)
-            print global_step%2
             if global_step % fitness_check == 0 and global_step > fitness_start:
                 save_path = saver.save(sess, working_dir+"/sess/"+folder_time+".ckpt", global_step=global_step)
 
