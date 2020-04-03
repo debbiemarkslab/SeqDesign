@@ -5,13 +5,16 @@
 We recommend using SeqDesign with a GPU that supports CUDA, especially for training.
 If a GPU is available, install the [TensorFlow GPU dependencies](https://www.tensorflow.org/install/gpu), 
 then install the SeqDesign dependencies with:
-> pip install -r requirements_gpu.txt  
+> pip install -r requirements_gpu.txt
 
-Otherwise use:  
+An example script for tensorflow-gpu installation is available at [linux_setup.sh](linux_setup.sh).
+As tested, installation from scratch on Ubuntu 18.04 
+
+If no GPU is available, use:  
 > pip install -r requirements.txt  
 
 Then install SeqDesign:
-> python setup.py  
+> python setup.py install
 
 ### Used packages and the versions tested:
 - tensorflow - 1.12  
