@@ -998,7 +998,6 @@ class DataHelperDoubleWeightingNanobody:
             return prot_decoder_input, prot_decoder_output, prot_mask_decoder, \
                 family_one_hot, Neff
 
-
     def seq_list_to_one_hot(self, sequence_list):
         seq_arr = np.zeros((len(sequence_list), 1, len(sequence_list[0]), len(self.alphabet)))
         for i,seq in enumerate(sequence_list):
@@ -1016,7 +1015,6 @@ class DataHelperDoubleWeightingNanobody:
                 seq += self.idx_to_aa[seq_aa_idx[i][j]]
             seq_list.append(seq)
         return seq_list
-
 
     def read_in_test_data(self, input_filename):
         INPUT = open(input_filename, 'r')

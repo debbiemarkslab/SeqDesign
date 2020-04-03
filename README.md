@@ -24,7 +24,7 @@ Then install SeqDesign:
 python setup.py install
 ```
 
-### Used software and the versions tested:
+### Used software and versions tested:
 - python - 2.7
 - tensorflow - 1.12  
 - numpy - 1.15  
@@ -39,10 +39,27 @@ See the [examples](examples) directory.
 
 
 ## Usage
+Run each script with the `-h` argument to see additional arguments.
 
 ### Training
 
 Given a fasta file of training sequences, run:
 ```shell script
 run_autoregressive_fr <your_dataset>.fa
+```
+
+### Mutation effect prediction
+Deterministic:
+```shell script
+calc_logprobs_seqs_fr --sess <your_sess> --dropout-p 1.0 --num-samples 1 --input <input>.fa --output <output>.csv
+```
+
+Average of 500 samples:
+```shell script
+calc_logprobs_seqs_fr --sess <your_sess> --dropout-p 0.5 --num-samples 500 --input <input>.fa --output <output>.csv
+```
+
+### Sequence generation
+```shell script
+generate_sample_seqs_fr --sess <your_sess>
 ```

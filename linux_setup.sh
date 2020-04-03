@@ -1,5 +1,6 @@
 #!/bin/bash
-# Example installation script of SeqDesign for Tensorflow-GPU from scratch on Linux
+# Example installation script of SeqDesign for Tensorflow-GPU from scratch
+# Tested on Ubuntu 18.04 LTS, runtime ~5 minutes including a reboot.
 # Miniconda and Tensorflow 1.12 are installed here, but a working Tensorflow 1 environment can substitute.
 # Before running this script, first run `git clone https://github.com/debbiemarkslab/SeqDesign.git`
 # and then `cd SeqDesign`
