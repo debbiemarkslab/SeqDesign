@@ -132,7 +132,6 @@ def main(working_dir='.'):
                     data_load_time=data_load_time, ce_loss=ce_loss, loss=loss, KL_embedding_loss=KL_embedding_loss,
                 )
             )
-            print global_step, time.time() - start,ce_loss,loss,KL_embedding_loss
 
             if global_step % plot_train == 0:
                 train_writer.add_summary(summary, global_step)
