@@ -9,6 +9,7 @@ if [ ! -f "/proc/driver/nvidia/version" ]; then
   echo "NVIDIA driver not found; installing."
   sudo apt update
   sudo apt install -y --no-install-recommends nvidia-driver-430
+  echo "NVIDIA drivers installed."
   echo "Please reboot your system, then run linux_setup.sh a second time."
   exit
 fi
@@ -19,12 +20,12 @@ sh Miniconda2-latest-Linux-x86_64.sh -b -p ~/miniconda2
 rm Miniconda2-latest-Linux-x86_64.sh
 $HOME/miniconda2/bin/conda init
 $HOME/miniconda2/bin/conda create -n seqdesign -y python=2.7 "tensorflow-gpu=1.12" scipy scikit-learn
-$HOME/miniconda2/bin/python -c "from tensorflow.python.client import device_lib; print device_lib.list_local_devices()"  # test GPU install
+$HOME/miniconda2/envs/seqdesign/bin/python -c "from tensorflow.python.client import device_lib; print device_lib.list_local_devices()"  # test GPU install
 
 # download SeqDesign code
 # git clone https://github.com/debbiemarkslab/SeqDesign.git
 # cd SeqDesign || exit
-$HOME/miniconda2/bin/python setup.py install  # use setup.py develop if you want to modify the code files
+$HOME/miniconda2/envs/seqdesign/bin/python setup.py install  # use setup.py develop if you want to modify the code files
 
 # download demo/example data
 cd examples || exit

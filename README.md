@@ -8,7 +8,7 @@ then install the SeqDesign dependencies with:
 > pip install -r requirements_gpu.txt
 
 An example script for tensorflow-gpu installation is available at [linux_setup.sh](linux_setup.sh).
-As tested, installation from scratch on Ubuntu 18.04 
+As tested, installation on a clean install of Ubuntu 18.04 LTS took 5 minutes.
 
 If no GPU is available, use:  
 > pip install -r requirements.txt  
