@@ -17,7 +17,7 @@ fi
 
 # set up conda and the SeqDesign environment
 wget https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh
-sh Miniconda2-latest-Linux-x86_64.sh -b -p ~/miniconda2
+sh Miniconda2-latest-Linux-x86_64.sh -b -p $HOME/miniconda2
 rm Miniconda2-latest-Linux-x86_64.sh
 $HOME/miniconda2/bin/conda init
 $HOME/miniconda2/bin/conda create -n seqdesign -y python=2.7 "tensorflow-gpu=1.12" scipy scikit-learn
