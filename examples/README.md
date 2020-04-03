@@ -1,7 +1,9 @@
 # SeqDesign Examples
 
 ## Downloading example data  
-> ./download_example_data.sh
+```shell script
+./download_example_data.sh
+```
 
 This script will download the following files for 
 training, mutation prediction, and sequence generation:  
@@ -14,7 +16,9 @@ training, mutation prediction, and sequence generation:
 - `sess/nanobody.ckpt-250000*`
 
 ## Training the model
-> ./demo_train.sh
+```shell script
+./demo_train.sh
+```
 
 This script will run 100 training iterations on the β-Lactamase sequence dataset
 (the full model runs 250,000 iterations).
@@ -24,7 +28,9 @@ The final model checkpoint will appear as three files in
 On an AWS p2.xlarge instance, this demonstration took 6 minutes.
 
 ## Predicting mutation effects
-> ./demo_calc_logprobs.sh
+```shell script
+./demo_calc_logprobs.sh
+```
 
 This script will use the pretrained model weights in 
 `sess/BLAT_ECOLX_v2_channels-48_rseed-11_19Aug16_0626PM.ckpt-250000*`
@@ -39,7 +45,9 @@ These predictions will appear in
 On an AWS p2.xlarge instance, this demonstration took 7 minutes.
 
 ## Generating nanobody libraries
-> ./demo_generate.sh
+```shell script
+./demo_generate.sh
+```
 
 This will generate nanobody CDR3 and FRA4 sequences given a preceding VH sequence.
 The full nanobody sequences will be output in

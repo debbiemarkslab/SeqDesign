@@ -10,8 +10,7 @@ setuptools.setup(
     version="0.0.1",
     author="Aaron Kollasch",
     author_email="awkollasch@gmail.com",
-    description=("Autoregressive protein models to "
-                 "predict mutation effects and generate novel sequences"),
+    description=("Biological sequence design for antibodies using deep learning"),
     license="MIT",
     keywords="autoregressive protein model generative",
     url="https://github.com/debbiemarkslab/seqdesign",
