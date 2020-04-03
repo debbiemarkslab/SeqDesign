@@ -24,7 +24,8 @@ Then install SeqDesign:
 python setup.py install
 ```
 
-### Used packages and the versions tested:
+### Used software and the versions tested:
+- python - 2.7
 - tensorflow - 1.12  
 - numpy - 1.15  
 - scipy - 0.19  
