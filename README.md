@@ -2,8 +2,9 @@
 
 SeqDesign is a generative, unsupervised model for biological sequences.
 It is capable of learning functional constraints from unaligned sequences
-in order to predict the effects of mutations including indels, and
-generate novel sequences.
+in order to predict the effects of mutations and generate novel sequences,
+including insertions and deletions. 
+For more information, check out the [biorxiv preprint](https://doi.org/10.1101/757252).
 
 ## Installation
 
