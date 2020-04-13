@@ -1,37 +1,13 @@
 # SeqDesign
 
-Biological sequence design for antibodies using deep learning.
+SeqDesign is a generative, unsupervised model for biological sequences.
+It is capable of learning functional constraints from unaligned sequences
+in order to predict the effects of mutations including indels, and
+generate novel sequences.
 
 ## Installation
 
-We recommend using SeqDesign with a GPU that supports CUDA, especially for training.
-If a GPU is available, install the [TensorFlow GPU dependencies](https://www.tensorflow.org/install/gpu), 
-then install the SeqDesign dependencies with:
-```shell script
-pip install -r requirements_gpu.txt
-```
-
-Using the [linux_setup.sh](linux_setup.sh) script, 
-installation on Ubuntu 18.04 LTS took 5 minutes.
-
-If no GPU is available, use:  
-```shell script
-pip install -r requirements.txt
-```
-
-Then install SeqDesign:
-```shell script
-python setup.py install
-```
-
-### Used software and versions tested:
-- python - 2.7
-- tensorflow - 1.12  
-- numpy - 1.15  
-- scipy - 0.19  
-- sklearn - 0.18  
-
-Tested on Ubuntu 18.04 LTS and CentOS 7.2
+See [INSTALL.md](INSTALL.md).
 
 ## Examples
 
@@ -39,7 +15,6 @@ See the [examples](examples) directory.
 
 
 ## Usage
-Run each script with the `-h` argument to see additional arguments.
 
 ### Training
 
@@ -63,3 +38,5 @@ calc_logprobs_seqs_fr --sess <your_sess> --dropout-p 0.5 --num-samples 500 --inp
 ```shell script
 generate_sample_seqs_fr --sess <your_sess>
 ```
+
+Run each script with the `-h` argument to see additional arguments.
