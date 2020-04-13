@@ -12,7 +12,7 @@ from seqdesign import helper
 def main():
     tf.logging.set_verbosity(tf.logging.ERROR)
 
-    parser = argparse.ArgumentParser(description="Calculate the log probability of mutated sequences.")
+    parser = argparse.ArgumentParser(description="Generate novel sequences sampled from the model.")
     parser.add_argument("--sess", type=str, required=True, help="Session name for restoring a model.")
     parser.add_argument("--r-seed", type=int, default=42, help="Random seed.")
     parser.add_argument("--temp", type=float, default=1.0, help="Generation temperature.")
@@ -90,18 +90,20 @@ def main():
 
             while complete == False and decoding_steps < 50:
 
-                feed_dict = {conv_model.placeholders["sequences_start_f"]: one_hot_seqs_f,\
-                    conv_model.placeholders["sequences_stop_f"]: one_hot_seqs_f,\
-                    conv_model.placeholders["mask_decoder_1D_f"]: one_hot_seq_mask,\
-                    conv_model.placeholders["Neff_f"]:[1.],\
-                    conv_model.placeholders["sequences_start_r"]: one_hot_seqs_f,\
-                    conv_model.placeholders["sequences_stop_r"]: one_hot_seqs_f,\
-                    conv_model.placeholders["mask_decoder_1D_r"]: one_hot_seq_mask,\
-                    conv_model.placeholders["Neff_r"]:[1.],\
-                    conv_model.placeholders["step"]:[10.],
-                    conv_model.placeholders["dropout"]: 1.0}
+                feed_dict = {
+                    conv_model.placeholders["sequences_start_f"]: one_hot_seqs_f,
+                    conv_model.placeholders["sequences_stop_f"]: one_hot_seqs_f,
+                    conv_model.placeholders["mask_decoder_1D_f"]: one_hot_seq_mask,
+                    conv_model.placeholders["Neff_f"]: [1.],
+                    conv_model.placeholders["sequences_start_r"]: one_hot_seqs_f,
+                    conv_model.placeholders["sequences_stop_r"]: one_hot_seqs_f,
+                    conv_model.placeholders["mask_decoder_1D_r"]: one_hot_seq_mask,
+                    conv_model.placeholders["Neff_r"]: [1.],
+                    conv_model.placeholders["step"]: [10.],
+                    conv_model.placeholders["dropout"]: 1.0
+                }
 
-                seq_logits_f = sess.run([conv_model.tensors["sequence_logits_f"]],feed_dict=feed_dict)[0]
+                seq_logits_f = sess.run([conv_model.tensors["sequence_logits_f"]], feed_dict=feed_dict)[0]
 
                 # slice off the last element of the list
                 output_logits = seq_logits_f[:,:,-1] * temp
