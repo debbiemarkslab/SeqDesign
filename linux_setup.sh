@@ -21,8 +21,8 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 sh Miniconda3-latest-Linux-x86_64.sh -b -p "$HOME"/miniconda3
 rm Miniconda3-latest-Linux-x86_64.sh
 "$HOME"/miniconda3/bin/conda init
-"$HOME"/miniconda3/bin/conda create -n seqdesign -y python=3.7 "tensorflow-gpu=1.12" scipy scikit-learn
-"$HOME"/miniconda3/envs/seqdesign/bin/python -c "from tensorflow.python.client import device_lib; print device_lib.list_local_devices()"  # test GPU install
+"$HOME"/miniconda3/bin/conda create -n seqdesign -y python=3.7 "tensorflow-gpu>=1.12,<2" scipy scikit-learn gitpython
+"$HOME"/miniconda3/envs/seqdesign/bin/python -c "from tensorflow.python.client import device_lib; print(device_lib.list_local_devices())"  # test GPU install
 
 # download SeqDesign code
 # git clone -b v3 https://github.com/debbiemarkslab/SeqDesign.git
