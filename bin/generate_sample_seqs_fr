@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+from seqdesign.scripts.generate_sample_seqs_fr import main
+
+if __name__ == "__main__":
+    main()

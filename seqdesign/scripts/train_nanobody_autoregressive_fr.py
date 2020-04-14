@@ -5,8 +5,8 @@ import numpy as np
 import time
 import os
 
-import hyper_conv_auto as model
-import helper
+from seqdesign import hyper_conv_auto as model
+from seqdesign import helper
 
 data_helper = helper.DataHelperDoubleWeightingNanobody(alignment_file='nanobodies/Manglik_filt_seq_id80_id90.fa')
 

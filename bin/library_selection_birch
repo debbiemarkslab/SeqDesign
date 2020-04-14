@@ -1,0 +1,9 @@
+#!/usr/bin/env python3
+import sys
+from seqdesign.scripts.library_selection_birch import main
+
+if __name__ == "__main__":
+    if len(sys.argv) == 2:
+        main(sys.argv[1])
+    else:
+        print("library_selection_birch <input_filename>")
