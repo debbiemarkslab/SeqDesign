@@ -15,7 +15,8 @@ class DataHelperSingleFamily:
     def __init__(self, dataset='', alignment_file='', focus_seq_name='',
                  mutation_file='', calc_weights=True, working_dir='.', theta=0.2,
                  load_all_sequences=True, alphabet_type='protein', max_seq_len=-1,
-                 longest_entry=125, r_seed=42):
+                 longest_entry=125, r_seed=42,
+                 aws_util: aws_utils.AWSUtility = None):
 
         np.random.seed(r_seed)
         self.dataset = dataset
@@ -26,6 +27,7 @@ class DataHelperSingleFamily:
         self.calc_weights = calc_weights
         self.alphabet_type = alphabet_type
         self.max_seq_len = max_seq_len
+        self.aws_util = aws_util
         # Alignment processing parameters
         self.theta = theta
 
@@ -77,8 +79,8 @@ class DataHelperSingleFamily:
         # for now, we will make all the sequences have the same length of
         #   encoded matrices, though this is wasteful
         filenames = glob.glob(f'{self.working_dir}/datasets/sequences/{self.dataset}*.fa')
-        if not filenames:
-            if not aws_utils.aws_s3_get_file_grep(
+        if not filenames and self.aws_util is not None:
+            if not self.aws_util.s3_get_file_grep(
                 s3_folder='datasets/sequences',
                 dest_folder=f'{self.working_dir}/datasets/sequences/',
                 search_pattern=f'{self.dataset}.*\\.fa',
@@ -715,9 +717,9 @@ class DataHelperSingleFamily:
                scipy.stats.spearmanr(prediction_all, measurement_list)[0]
 
     def read_in_test_data(self, input_filename):
-        if not os.path.exists(input_filename) and input_filename.startswith('input/'):
+        if not os.path.exists(input_filename) and input_filename.startswith('input/') and self.aws_util is not None:
             folder, filename = input_filename.rsplit('/', 1)
-            if not aws_utils.aws_s3_get_file_grep(
+            if not self.aws_util.s3_get_file_grep(
                     s3_folder=f'calc_logprobs/{folder}',
                     dest_folder=f'{self.working_dir}/calc_logprobs/{folder}',
                     search_pattern=f'{filename}',

@@ -95,9 +95,11 @@ def main(working_dir='.'):
 
     tf.set_random_seed(r_seed)
 
+    aws_util = aws_utils.AWSUtility(s3_base_path=ARGS.s3_path) if ARGS.s3_path else None
     data_helper = helper.DataHelperSingleFamily(
         working_dir=working_dir, dataset=ARGS.dataset,
-        r_seed=r_seed, alphabet_type=ARGS.alphabet_type
+        r_seed=r_seed, alphabet_type=ARGS.alphabet_type,
+        aws_util=aws_util,
     )
     data_helper.family_name = ARGS.dataset
 
@@ -204,7 +206,8 @@ def main(working_dir='.'):
 
     print(f"Done! Total run time: {timedelta(seconds=time.time()-start_run_time)}")
     log_f.flush()
-    aws_utils.aws_s3_sync(local_folder=folder, s3_folder=f'sess/{folder_time}/', destination='s3', version=version.VERSION)
+    if aws_util:
+        aws_util.s3_sync(local_folder=folder, s3_folder=f'sess/{folder_time}/', destination='s3')
 
     if working_dir != '.':
         os.makedirs(f'{working_dir}/complete/', exist_ok=True)

@@ -25,6 +25,7 @@ def main():
     parser.add_argument("--input", type=str, default='',  help="Directory and filename of the input data.", required=True)
     parser.add_argument("--output", type=str, default='',  help="Directory and filename of the outout data.", required=True)
     parser.add_argument("--alphabet-type", type=str, default='protein', metavar='T',  help="Alphabet to use for the dataset.", required=False)
+    parser.add_argument("--s3-path", type=str, default='', help="Base s3:// path (leave blank to disable syncing).")
 
     ARGS = parser.parse_args()
 
@@ -45,7 +46,12 @@ def main():
     print("SeqDesign git hash:", str(utils.get_github_head_hash()))
     print()
 
-    data_helper = helper.DataHelperSingleFamily(working_dir=working_dir, alphabet_type=ARGS.alphabet_type)
+    aws_util = aws_utils.AWSUtility(s3_base_path=ARGS.s3_path) if ARGS.s3_path else None
+    data_helper = helper.DataHelperSingleFamily(
+        working_dir=working_dir,
+        alphabet_type=ARGS.alphabet_type,
+        aws_util=aws_util,
+    )
 
     # Variables for runtime modification
     minibatch_size = ARGS.minibatch_size
@@ -58,8 +64,8 @@ def main():
     data_helper.read_in_test_data(input_filename)
     print("Read in test data.")
 
-    if not glob.glob(f"{working_dir}/sess/{sess_name}/{sess_name}.ckpt-{ARGS.checkpoint}*"):
-        if not aws_utils.aws_s3_get_file_grep(
+    if not glob.glob(f"{working_dir}/sess/{sess_name}/{sess_name}.ckpt-{ARGS.checkpoint}*") and aws_util:
+        if not aws_util.s3_get_file_grep(
             f'sess/{sess_name}',
             f'{working_dir}/sess/{sess_name}',
             f'{sess_name}.ckpt-{ARGS.checkpoint}.*',
@@ -95,8 +101,8 @@ def main():
         )
         print("Done!")
 
-    if output_filename.startswith('output/'):
-        aws_utils.aws_s3_cp(
+    if output_filename.startswith('output/') and aws_util:
+        aws_util.s3_cp(
             local_file=output_filename,
             s3_file=f'calc_logprobs/output/{output_filename.rsplit("/", 1)[1]}',
             destination='s3'
