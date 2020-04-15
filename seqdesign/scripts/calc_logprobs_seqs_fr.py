@@ -21,7 +21,7 @@ def main():
     parser.add_argument("--minibatch-size", type=int, default=100, metavar='B', help="Minibatch size for inferring effect prediction.")
     parser.add_argument("--dropout-p", type=float, default=1., metavar='P', help="Dropout p while sampling log p(x).")
     parser.add_argument("--sess", type=str, default='', help="Session folder name for restoring a model.", required=True)
-    parser.add_argument("--checkpoint", type=int, default=None,  metavar='CKPT', help="Checkpoint step number.", required=True)
+    parser.add_argument("--checkpoint", type=int, default=None,  metavar='CKPT', help="Checkpoint step number.")
     parser.add_argument("--input", type=str, default='',  help="Directory and filename of the input data.", required=True)
     parser.add_argument("--output", type=str, default='',  help="Directory and filename of the outout data.", required=True)
     parser.add_argument("--alphabet-type", type=str, default='protein', metavar='T',  help="Alphabet to use for the dataset.", required=False)
