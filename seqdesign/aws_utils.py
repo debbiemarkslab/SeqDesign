@@ -3,7 +3,7 @@ import re
 import os
 from seqdesign.version import VERSION
 
-S3_FOLDER_URL = "s3://markslab-private/autoregressive"
+S3_FOLDER_URL = "s3://markslab-private/seqdesign"
 
 if os.path.exists('/n/groups/marks/software/aws-cli/bin/aws'):
     AWS_BIN = '/n/groups/marks/software/aws-cli/bin/aws'
