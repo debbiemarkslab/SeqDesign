@@ -21,7 +21,7 @@ def main():
     parser.add_argument("--minibatch-size", type=int, default=100, metavar='B', help="Minibatch size for inferring effect prediction.")
     parser.add_argument("--dropout-p", type=float, default=1., metavar='P', help="Dropout p while sampling log p(x).")
     parser.add_argument("--sess", type=str, default='', help="Session folder name for restoring a model.", required=True)
-    parser.add_argument("--checkpoint", type=int, default=250000,  metavar='CKPT', help="Checkpoint step number.", required=True)
+    parser.add_argument("--checkpoint", type=int, default=None,  metavar='CKPT', help="Checkpoint step number.", required=True)
     parser.add_argument("--input", type=str, default='',  help="Directory and filename of the input data.", required=True)
     parser.add_argument("--output", type=str, default='',  help="Directory and filename of the outout data.", required=True)
     parser.add_argument("--alphabet-type", type=str, default='protein', metavar='T',  help="Alphabet to use for the dataset.", required=False)
@@ -64,11 +64,20 @@ def main():
     data_helper.read_in_test_data(input_filename)
     print("Read in test data.")
 
-    if not glob.glob(f"{working_dir}/sess/{sess_name}/{sess_name}.ckpt-{ARGS.checkpoint}*") and aws_util:
+    if ARGS.checkpoint is None:  # look for old-style session file structure
+        glob_path = f"{working_dir}/sess/{sess_name}*"
+        grep_path = f'{sess_name}.*'
+        sess_namedir = f"{working_dir}/sess/{sess_name}"
+    else:  # look for new folder-based session file structure
+        glob_path = f"{working_dir}/sess/{sess_name}/{sess_name}.ckpt-{ARGS.checkpoint}*"
+        grep_path = f'{sess_name}.ckpt-{ARGS.checkpoint}.*'
+        sess_namedir = f"{working_dir}/sess/{sess_name}/{sess_name}.ckpt-{ARGS.checkpoint}"
+
+    if not glob.glob(glob_path) and aws_util:
         if not aws_util.s3_get_file_grep(
             f'sess/{sess_name}',
             f'{working_dir}/sess/{sess_name}',
-            f'{sess_name}.ckpt-{ARGS.checkpoint}.*',
+            grep_path,
         ):
             raise Exception("Could not download session files from S3.")
 
@@ -89,7 +98,6 @@ def main():
         init = tf.global_variables_initializer()
         sess.run(init)
 
-        sess_namedir = f"{working_dir}/sess/{sess_name}/{sess_name}.ckpt-{ARGS.checkpoint}"
         saver.restore(sess, sess_namedir)
         print("Loaded parameters.")
 
