@@ -2,7 +2,7 @@
 import tensorflow as tf
 import numpy as np
 import time
-import sys
+import os
 import argparse
 from seqdesign import hyper_conv_auto as model
 from seqdesign import helper
@@ -38,7 +38,9 @@ def main():
 
     alphabet_list = list(data_helper.alphabet)
 
-    output_filename = f"{working_dir}/output/nanobody_temp-{temp}_param-{sess_name}_rseed-{r_seed}.fa"
+    if not os.path.exists(os.path.join(working_dir, 'generated')):
+        os.makedirs(os.path.join(working_dir, 'generated'))
+    output_filename = f"{working_dir}/generated/{args.sess}_temp-{temp}_param-{sess_name}_rseed-{r_seed}.fa"
     OUTPUT = open(output_filename, "w")
     OUTPUT.close()
 
