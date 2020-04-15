@@ -17,6 +17,8 @@ def main(working_dir='.'):
     start_run_time = time.time()
 
     parser = argparse.ArgumentParser(description="Train an autoregressive model on a collection of sequences.")
+    parser.add_argument("--s3-path", type=str, default='',
+                        help="Base s3:// path (leave blank to disable syncing).")
     parser.add_argument("--run-version", type=str, default=version.VERSION, metavar='V',
                         help="Current run version (e.g. v2, v3, etc.).")
     parser.add_argument("--run-name-prefix", type=str, default=None, metavar='P',
