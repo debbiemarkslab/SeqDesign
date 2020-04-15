@@ -1,51 +1,56 @@
 # SeqDesign Examples
 
-## Downloading Data
+## Downloading example data  
+```shell script
+./download_example_data.sh
+```
 
+This script will download the following files for 
+training, mutation prediction, and sequence generation:  
+
+- `datasets/sequences/BLAT_ECOLX_1_b0.5_lc_weights.fa`
+- `datasets/nanobodies/Manglik_filt_seq_id80_id90.fa`
+- `datasets/nanobodies/Manglik_labelled_nanobodies.txt`
+- `calc_logprobs/input/BLAT_ECOLX_r24-286_Ranganathan2015.fa`
+- `sess/BLAT_ECOLX_v2_channels-48_rseed-11_19Aug16_0626PM.ckpt-250000*`
+- `sess/nanobody.ckpt-250000*`
+
+## Training the model
+```shell script
+./demo_train.sh
+```
+
+This script will run 100 training iterations on the β-Lactamase sequence dataset
+(the full model runs 250,000 iterations).
+The final model checkpoint will appear as three files in
+`sess/BLAT_ECOLX_elu_channels-48_rseed-11_<timestamp>.ckpt-100*`
+
+On an AWS p2.xlarge instance, this demonstration took 6 minutes.
 
 ## Predicting mutation effects
+```shell script
+./demo_calc_logprobs.sh
+```
 
+This script will use the pretrained model weights in 
+`sess/BLAT_ECOLX_v2_channels-48_rseed-11_19Aug16_0626PM.ckpt-250000*`
+to make mutation effect predictions for the β-Lactamase mutational scan from
+[Stiffler et al., Cell, 2015](https://doi.org/10.1016/j.cell.2015.01.035).
 
-## Generating libraries
+The final predictions are the average of 10 predictions 
+(500 are used in the full test).
+These predictions will appear in
+`calc_logprobs/output/demo_BLAT_ECOLX_r24-286_Ranganathan2015_rseed-11_channels-48_dropoutp-0.5.csv`
 
-### Relevant scripts and their description:
+On an AWS p2.xlarge instance, this demonstration took 7 minutes.
 
-- `calc_logprobs_seqs_nanobody.py` <br>&emsp;
-    calculates log probabilities for all nanobody sequences in a user-provided fasta file 
+## Generating nanobody libraries
+```shell script
+./demo_generate.sh
+```
 
-- `calc_logprobs_seqs_fr.py` <br>&emsp;
-    calculates log probabilities for all sequences in a user-provided fasta file 
+This will generate nanobody CDR3 and FRA4 sequences given a preceding VH sequence.
+The full nanobody sequences will be output in
+`generated/nanobody.ckpt-250000_temp-1.0_rseed-42.fa` 
 
-- `calc_logprobs_seqs_nanobody.py` <br>&emsp;
-    calculates log probabilities for all nanobody sequences in a user-provided fasta file 
-
-- `./code/*` <br>&emsp;
-    scripts required to run `calc_logprobs_seqs_nanobody.py`
-
-- `./library_selection/birch_funcs.py` <br>&emsp;
-    BIRCH clustering code used to cluster
-    the nanobody sequences. This code was originally derived from sklearn, but
-    it was modified to run on extremely large datasets. 
-
-- `./library_selection/generate_sample_seqs_fr.py` <br>&emsp;
-    code for ancestral sampling of
-    CDR3 sequences from the germline nanobody sequence
-
-- `./library_selection/helper_birch.py` <br>&emsp;
-    code for running BIRCH clustering on the
-    processed nanobody k-mer counts after processing by process_output_sequences.py
-
-- `./library_selection/process_output_sequences.py` <br>&emsp;
-    script to process all of the
-    randomly generated sequences from generate_sample_seqs_fr.py. This code makes
-    sure that these sequences were not in the starting library, have the correct
-    final framework region, have the right other library constraints, and finally
-    processes these sequences into k-mer vectors for downstream processing.
-
-
-
-### Used packages and their licenses:
-- tensorflow - Apache License
-- numpy - New BSD License
-- scipy - New BSD License
-- sklearn - New BSD License
+On an AWS p2.xlarge instance, this demonstration took 6 minutes.
