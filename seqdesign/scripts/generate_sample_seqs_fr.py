@@ -3,12 +3,22 @@ import tensorflow as tf
 import numpy as np
 import time
 import sys
+import argparse
 from seqdesign import hyper_conv_auto as model
 from seqdesign import helper
 
 
 def main():
-    working_dir = ".."
+    parser = argparse.ArgumentParser(description="Generate novel sequences sampled from the model.")
+    parser.add_argument("--sess", type=str, required=True, help="Session name for restoring a model.")
+    parser.add_argument("--r-seed", type=int, default=42, help="Random seed.")
+    parser.add_argument("--temp", type=float, default=1.0, help="Generation temperature.")
+    parser.add_argument("--batch-size", type=int, default=500, help="Number of sequences per generation batch.")
+    parser.add_argument("--num-batches", type=int, default=1000000, help="Number of batches to generate.")
+
+    args = parser.parse_args()
+
+    working_dir = "."
 
     data_helper = helper.DataHelperDoubleWeightingNanobody(
         working_dir=working_dir,
@@ -16,19 +26,19 @@ def main():
     )
 
     # Variables for runtime modification
-    batch_size = 500
-    num_batches = 1000000
-    temp = float(sys.argv[1])
-    r_seed = int(sys.argv[2])
+    sess_name = args.sess
+    batch_size = args.batch_size
+    num_batches = args.num_batches
+    temp = args.temp
+    r_seed = args.r_seed
 
-    print(r_seed, type(r_seed))
+    print(r_seed)
 
     np.random.seed(r_seed)
 
     alphabet_list = list(data_helper.alphabet)
 
-    sess_name = "nanobody.ckpt-250000"
-    output_filename = working_dir+"/output/nanobody_temp-"+str(temp)+"_param-"+sess_name+"_rseed-"+str(r_seed)+".fa"
+    output_filename = f"{working_dir}/output/nanobody_temp-{temp}_param-{sess_name}_rseed-{r_seed}.fa"
     OUTPUT = open(output_filename, "w")
     OUTPUT.close()
 
