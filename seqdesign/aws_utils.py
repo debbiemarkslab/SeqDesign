@@ -58,7 +58,7 @@ class AWSUtility:
         else:
             print("Syncing data from AWS S3.")
             src_folder, dest_folder = s3_folder, local_folder
-        cmd = ['s3', 'sync', *args, src_folder, dest_folder]
+        cmd = ['s3', 'sync', src_folder, dest_folder, *args]
         code, std_out, std_err = self.run_cmd(cmd)
         if code == 0:
             print("Success.")
