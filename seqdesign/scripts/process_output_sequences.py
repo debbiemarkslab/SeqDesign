@@ -121,7 +121,7 @@ def main():
                 if not valid_ending:
                     continue
 
-                cdr = nanobody_seq[ARGS.nanobody_start-1:-ARGS.nanobody_end]
+                cdr = nanobody_seq[ARGS.cdr3_start-1:-ARGS.cdr3_end]
                 no_sulfur_aas = False
                 if "C" not in cdr and "M" not in cdr:
                     no_sulfur_aas = True
