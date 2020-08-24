@@ -1,10 +1,19 @@
 import tensorflow as tf
 import numpy as np
 from seqdesign import layers_auto_b as mpnn_layers
+from tensorflow.python import pywrap_tensorflow
 
 
 class AutoregressiveFR:
-    def __init__(self, dims={}, hyperparams={}, channels=48, r_seed=42):
+    @staticmethod
+    def get_checkpoint_legacy_version(path):
+        reader = pywrap_tensorflow.NewCheckpointReader(path)
+        if reader.has_tensor('Forward/Encoder/DilationBlock1/ConvNet1D/Conv8_3x200/DilatedConvGen8/W'):
+            return 0
+        else:
+            return 1
+
+    def __init__(self, dims={}, hyperparams={}, channels=48, r_seed=42, legacy_version=1):
 
         self.hyperparams = {
             # For purely dilated conv network
@@ -42,6 +51,9 @@ class AutoregressiveFR:
                 "ema": False,
             }
         }
+
+        if legacy_version == 0:
+            self.hyperparams['encoder']['dilation_schedule'] = [1, 2, 4, 8, 16, 32, 64, 128, 200]
 
         self.dims = {
             "batch": 10,

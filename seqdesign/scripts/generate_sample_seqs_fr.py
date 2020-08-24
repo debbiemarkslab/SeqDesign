@@ -47,8 +47,10 @@ def main():
     # Provide the starting sequence to use for generation
     input_seq = "*EVQLVESGGGLVQAGGSLRLSCAASGFTFSSYAMGWYRQAPGKEREFVAAISWSGGSTYYADSVKGRFTISRDNAKNTVYLQMNSLKPEDTAVYYC"
 
+    sess_namedir = working_dir + "/sess/" + sess_name
+    legacy_verison = model.AutoregressiveFR.get_checkpoint_legacy_version(sess_namedir)
     dims = {}
-    conv_model = model.AutoregressiveFR(dims=dims)
+    conv_model = model.AutoregressiveFR(dims=dims, legacy_version=legacy_verison)
 
     params = tf.trainable_variables()
     p_counts = [np.prod(v.get_shape().as_list()) for v in params]
@@ -65,7 +67,6 @@ def main():
         init = tf.global_variables_initializer()
         sess.run(init)
 
-        sess_namedir = working_dir+"/sess/"+sess_name
         saver.restore(sess, sess_namedir)
         print("Loaded parameters")
 

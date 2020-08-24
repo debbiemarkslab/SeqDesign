@@ -123,9 +123,7 @@ def main():
                     continue
 
                 cdr = nanobody_seq[ARGS.cdr3_start-1:-ARGS.cdr3_end]
-                no_sulfur_aas = False
-                if "C" not in cdr and "M" not in cdr:
-                    no_sulfur_aas = True
+                no_sulfur_aas = ("C" not in cdr and "M" not in cdr)
 
                 glycosylation_motifs = re.findall("N[ACDEFGHIKLMNQRSTVWY][S|T]", nanobody_seq)
                 no_glycosylation_motif = (glycosylation_motifs == [])
