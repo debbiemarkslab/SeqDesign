@@ -94,6 +94,7 @@ def main():
                 name = line
             else:
                 nanobody_seq = line
+                num_seqs += 1
                 valid_ending = False
                 # Make sure it has a valid sequence ending
                 if "YWGQGTQVTVS*" in nanobody_seq:
