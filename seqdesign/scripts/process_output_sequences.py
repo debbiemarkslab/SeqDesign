@@ -6,20 +6,20 @@ import argparse
 
 def main():
     parser = argparse.ArgumentParser(description="Preprocess generated nanobody sequences.")
-    parser.add_argument("--file-prefix-in", type=str, default=None, metavar='P',
+    parser.add_argument("--file-prefix-in", type=str, required=True, metavar='P',
                         help="Prefix for input files (supports glob).")
-    parser.add_argument("--file-prefix-out", type=str, default=None, metavar='P',
+    parser.add_argument("--file-prefix-out", type=str, required=True, metavar='P',
                         help="Prefix for output file.")
+    parser.add_argument("--prev-sequences", type=str, required=True, metavar='P',
+                        help="Location of previous nanobody sequences with labeled CDRs")
     parser.add_argument("--cdr3-start", type=int, default=97,
                         help="Start position for nanobody CDR3")
     parser.add_argument("--cdr3-end", type=int, default=11,
                         help="Length of final nanobody beta strand")
-    parser.add_argument("--alphabet-type", type=str, default='protein', metavar='T',
-                        help="Type of data to model. Options = [protein, DNA, RNA]")
     ARGS = parser.parse_args()
 
     prev_cdr3s = {}
-    prev_nanobody_data_file = open("../datasets/Manglik_labelled_nanobodies.txt", "r")
+    prev_nanobody_data_file = open(ARGS.prev_sequences, "r")
     after_name = True
     after_seq = False
     seq = ""
