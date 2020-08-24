@@ -1,13 +1,22 @@
 #!/usr/bin/env python3
 import glob
 import re
+import argparse
 
 
-# TODO test this script
 def main():
-    file_prefix = "nanobody_id80*_temp-1.0_param-nanobody.ckpt-250000"
-    file_prefix_out = "nanobody_id80_temp-1.0_param-nanobody.ckpt-250000"
-
+    parser = argparse.ArgumentParser(description="Preprocess generated nanobody sequences.")
+    parser.add_argument("--file-prefix-in", type=str, default=None, metavar='P',
+                        help="Prefix for input files (supports glob).")
+    parser.add_argument("--file-prefix-out", type=str, default=None, metavar='P',
+                        help="Prefix for output file.")
+    parser.add_argument("--cdr3-start", type=int, default=97,
+                        help="Start position for nanobody CDR3")
+    parser.add_argument("--cdr3-end", type=int, default=11,
+                        help="Length of final nanobody beta strand")
+    parser.add_argument("--alphabet-type", type=str, default='protein', metavar='T',
+                        help="Type of data to model. Options = [protein, DNA, RNA]")
+    ARGS = parser.parse_args()
 
     prev_cdr3s = {}
     prev_nanobody_data_file = open("../datasets/Manglik_labelled_nanobodies.txt", "r")
@@ -39,7 +48,6 @@ def main():
 
         return cdr_seq
 
-
     for i,line in enumerate(prev_nanobody_data_file):
         line = line.rstrip()
         if line[0] == ">":
@@ -68,7 +76,14 @@ def main():
     all_functional_sequence_name_to_sequences = {}
     sequence_dict = {}
 
-    for filename in glob.glob("../output/"+file_prefix+"*"):
+    num_seqs = 0
+    num_valid_endings = 0
+    num_unique_seqs = 0
+    num_non_training_seqs = 0
+    num_no_glycosylation_motifs = 0
+    num_no_asparagine_deamination_motifs = 0
+    num_no_sulfur_containing_amino_acids = 0
+    for filename in glob.glob(ARGS.file_prefix_in):
         r_seed = filename.split("-")[-1].split(".")[0]
 
         INPUT = open(filename, "r")
@@ -103,25 +118,31 @@ def main():
 
                     valid_ending = True
 
-                if valid_ending:
-                    cdr = nanobody_seq[96:-11]
-                    no_sulfur_aas = False
-                    if "C" not in cdr and "M" not in cdr:
-                        no_sulfur_aas = True
+                if not valid_ending:
+                    continue
 
-                    glycosylation_motifs = re.findall("N[ACDEFGHIKLMNQRSTVWY][S|T]", nanobody_seq)
+                cdr = nanobody_seq[ARGS.nanobody_start-1:-ARGS.nanobody_end]
+                no_sulfur_aas = False
+                if "C" not in cdr and "M" not in cdr:
+                    no_sulfur_aas = True
+
+                glycosylation_motifs = re.findall("N[ACDEFGHIKLMNQRSTVWY][S|T]", nanobody_seq)
+                no_glycosylation_motif = (glycosylation_motifs == [])
 
                 asp_deamination_motif = re.findall("NG", nanobody_seq)
+                no_asp_deamine_motif = (asp_deamination_motif == [])
 
-                if glycosylation_motifs == []:
-                    no_glycosylation_motif = True
-                else:
-                    no_glycosylation_motif = False
-
-                if asp_deamination_motif == []:
-                    no_asp_deamine_motif = True
-                else:
-                    no_asp_deamine_motif = False
+                num_valid_endings += 1
+                if nanobody_seq not in sequence_dict:
+                    num_unique_seqs += 1
+                    if cdr not in prev_cdr3s:
+                        num_non_training_seqs += 1
+                        if no_glycosylation_motif:
+                            num_no_glycosylation_motifs += 1
+                            if no_asp_deamine_motif:
+                                num_no_asparagine_deamination_motifs += 1
+                                if no_sulfur_aas:
+                                    num_no_sulfur_containing_amino_acids += 1
 
                 if no_glycosylation_motif and no_sulfur_aas and no_asp_deamine_motif and nanobody_seq not in sequence_dict and cdr not in prev_cdr3s:
                     sequence_dict[nanobody_seq] = ""
@@ -129,8 +150,16 @@ def main():
 
         INPUT.close()
 
+    print("num seqs:", num_seqs)
+    print("num valid endings: ", num_valid_endings)
+    print("num unique seqs:", num_unique_seqs)
+    print("num non-training seqs:", num_non_training_seqs)
+    print("num without glycosylation motifs:", num_no_glycosylation_motifs)
+    print("num without asparagine deamination motifs:", num_no_asparagine_deamination_motifs)
+    print("num without sulfur containing amino acids:", num_no_sulfur_containing_amino_acids)
+
     print("New nanobodies:", len(all_functional_sequence_name_to_sequences))
-    with open(file_prefix_out+"unique_nanobodies.fa", "w") as out_f:
+    with open(ARGS.file_prefix_out+"_unique_nanobodies.fa", "w") as out_f:
         for name,seq in all_functional_sequence_name_to_sequences.items():
             out_f.write(name+"\n"+seq+"\n")
 

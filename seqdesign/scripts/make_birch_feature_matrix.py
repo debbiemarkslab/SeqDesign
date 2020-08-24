@@ -87,7 +87,7 @@ molecular_weight  = {"A":89.1,
                      "Y":181.19,
                      "V":117.15}
 
-alphabet = 'ACDEFGHIKLNPQRTVWY'
+alphabet = 'ADEFGHIKLNPQRSTVWY'
 
 kmer_list = [aa for aa in alphabet]
 for aa in alphabet:
@@ -95,6 +95,8 @@ for aa in alphabet:
         kmer_list.append(aa+bb)
         for cc in alphabet:
             kmer_list.append(aa+bb+cc)
+
+kmer_to_idx = {aa: i for i, aa in enumerate(kmer_list)}
 
 
 
