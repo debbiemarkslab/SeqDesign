@@ -31,5 +31,6 @@ setuptools.setup(
         "bin/library_selection_birch",
         "bin/process_output_sequences",
         "bin/run_autoregressive_fr",
+        "bin/make_birch_feature_matrix",
     ],
 )

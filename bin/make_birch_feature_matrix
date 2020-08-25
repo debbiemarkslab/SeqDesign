@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+import sys
+from seqdesign.scripts.make_birch_feature_matrix import main
+
+if __name__ == "__main__":
+    main()
