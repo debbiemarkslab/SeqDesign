@@ -11,6 +11,7 @@ from seqdesign import helper
 def main():
     parser = argparse.ArgumentParser(description="Generate novel sequences sampled from the model.")
     parser.add_argument("--sess", type=str, required=True, help="Session name for restoring a model.")
+    parser.add_argument("--checkpoint", type=int, default=None, metavar='CKPT', help="Checkpoint step number.")
     parser.add_argument("--r-seed", type=int, default=42, help="Random seed.")
     parser.add_argument("--temp", type=float, default=1.0, help="Generation temperature.")
     parser.add_argument("--batch-size", type=int, default=500, help="Number of sequences per generation batch.")
@@ -47,7 +48,10 @@ def main():
     # Provide the starting sequence to use for generation
     input_seq = "*EVQLVESGGGLVQAGGSLRLSCAASGFTFSSYAMGWYRQAPGKEREFVAAISWSGGSTYYADSVKGRFTISRDNAKNTVYLQMNSLKPEDTAVYYC"
 
-    sess_namedir = working_dir + "/sess/" + sess_name
+    if args.checkpoint is None:  # look for old-style session file structure
+        sess_namedir = f"{working_dir}/sess/{sess_name}"
+    else:  # look for new folder-based session file structure
+        sess_namedir = f"{working_dir}/sess/{sess_name}/{sess_name}.ckpt-{args.checkpoint}"
     legacy_verison = model.AutoregressiveFR.get_checkpoint_legacy_version(sess_namedir)
     dims = {}
     conv_model = model.AutoregressiveFR(dims=dims, legacy_version=legacy_verison)
