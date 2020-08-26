@@ -105,6 +105,7 @@ def main():
     parser = argparse.ArgumentParser(description="Make a feature matrix for BIRCH clustering from a fasta file.")
     parser.add_argument("--input", type=str, required=True, help="Input sequence fasta file.")  # '../nanobody_id80_temp-1.0_param-nanobody_18Apr18_1129PM.ckpt-250000unique_nanobodies.fa'
     parser.add_argument("--output", type=str, required=True, help="Output feature matrix csv.")  # 'nanobody_id80_temp-1.0_param-nanobody_18Apr18_1129PM.ckpt-250000unique_nanobodies_feat_matrix.csv'
+    parser.add_argument("--num-jobs", type=int, default=12, help="Number of parallel jobs.")
     args = parser.parse_args()
 
     header_list = ['length','hydrophobicity_ph2','hydrophobicity_ph7','pI','mw']+kmer_list
@@ -139,7 +140,7 @@ def main():
                     seq_list.append(line)
 
     print("Starting parallel for loop")
-    feature_list_of_lists = Parallel(n_jobs=12, backend='multiprocessing')(
+    feature_list_of_lists = Parallel(n_jobs=args.num_jobs, backend='multiprocessing')(
         delayed(calc_feature_matrix)(i, name_list[i], seq_list[i]) for i in range(len(name_list))
     )
 
