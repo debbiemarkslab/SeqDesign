@@ -124,6 +124,7 @@ def main():
         feature_list += [len(re.findall(kmer, seq)) for kmer in kmer_list]
         return feature_list
 
+    print("Loading sequences")
     with open(args.input, 'r') as INPUT:
         for i, line in enumerate(INPUT):
             if i > -1:
@@ -135,6 +136,7 @@ def main():
                     name_list.append(name)
                     seq_list.append(line)
 
+    print("Starting parallel for loop")
     feature_list_of_lists = Parallel(n_jobs=12)(
         delayed(calc_feature_matrix)(i, name_list[i], seq_list[i]) for i in range(len(name_list))
     )
