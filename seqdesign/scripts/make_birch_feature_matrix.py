@@ -106,44 +106,41 @@ def main():
     parser.add_argument("--output", type=str, required=True, help="Output feature matrix csv.")  # 'nanobody_id80_temp-1.0_param-nanobody_18Apr18_1129PM.ckpt-250000unique_nanobodies_feat_matrix.csv'
     args = parser.parse_args()
 
-    INPUT = open(args.input, 'r')
-    OUTPUT = open(args.output, 'w')
-
     header_list = ['length','hydrophobicity_ph2','hydrophobicity_ph7','pI','mw']+kmer_list
-    OUTPUT.write(",".join(header_list)+'\n')
-
     name_list = []
     seq_list = []
-    feature_list = []
 
     def calc_feature_matrix(i, name, seq):
         if i % 10000 == 0:
             print(i)
-            feature_list = [name, len(seq)]
-            feature_list.append(np.sum([hydrophobicity_ph2[aa] for aa in seq]))
-            feature_list.append(np.sum([hydrophobicity_ph7[aa] for aa in seq]))
-            feature_list.append(np.sum([pI[aa] for aa in seq]))
-            feature_list.append(np.sum([molecular_weight[aa] for aa in seq]))
-            # feature_list += [seq.count(kmer) for kmer in kmer_list]
-            feature_list += [len(re.findall(kmer, seq)) for kmer in kmer_list]
-
+        feature_list = [
+            name, len(seq),
+            np.sum([hydrophobicity_ph2[aa] for aa in seq]),
+            np.sum([hydrophobicity_ph7[aa] for aa in seq]),
+            np.sum([pI[aa] for aa in seq]),
+            np.sum([molecular_weight[aa] for aa in seq])
+        ]
+        # feature_list += [seq.count(kmer) for kmer in kmer_list]
+        feature_list += [len(re.findall(kmer, seq)) for kmer in kmer_list]
         return feature_list
 
-    for i,line in enumerate(INPUT):
-        if i > -1:
-            line = line.rstrip()
-            if line[0] == '>':
-                name = line[1:]
+    with open(args.input, 'r') as INPUT:
+        for i, line in enumerate(INPUT):
+            if i > -1:
+                line = line.rstrip()
+                if line[0] == '>':
+                    name = line[1:]
 
-            else:
-                name_list.append(name)
-                seq_list.append(line)
+                else:
+                    name_list.append(name)
+                    seq_list.append(line)
 
     feature_list_of_lists = Parallel(n_jobs=12)(
         delayed(calc_feature_matrix)(i, name_list[i], seq_list[i]) for i in range(len(name_list))
     )
 
-    for feature_list in feature_list_of_lists:
-        OUTPUT.write(",".join([str(val) for val in feature_list])+'\n')
-    INPUT.close()
-    OUTPUT.close()
+    print("Writing feature matrix to file.")
+    with open(args.output, 'w') as OUTPUT:
+        OUTPUT.write(",".join(header_list) + '\n')
+        for fl in feature_list_of_lists:
+            OUTPUT.write(",".join([str(val) for val in fl])+'\n')
