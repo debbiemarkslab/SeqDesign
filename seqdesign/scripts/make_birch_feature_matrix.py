@@ -137,7 +137,7 @@ def main():
                     seq_list.append(line)
 
     print("Starting parallel for loop")
-    feature_list_of_lists = Parallel(n_jobs=12)(
+    feature_list_of_lists = Parallel(n_jobs=12, backend='multiprocessing')(
         delayed(calc_feature_matrix)(i, name_list[i], seq_list[i]) for i in range(len(name_list))
     )
 
