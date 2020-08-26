@@ -114,7 +114,7 @@ def main():
 
     def calc_feature_matrix(i, name, seq):
         if i % 10000 == 0:
-            print(i)
+            print(i, flush=True)
         feature_list = [
             name,
             len(seq),
@@ -144,7 +144,7 @@ def main():
         delayed(calc_feature_matrix)(i, name_list[i], seq_list[i]) for i in range(len(name_list))
     )
 
-    print("Writing feature matrix to file.")
+    print("Writing feature matrix to file.", flush=True)
     with open(args.output, 'w') as OUTPUT:
         OUTPUT.write(",".join(header_list) + '\n')
         for fl in feature_list_of_lists:
