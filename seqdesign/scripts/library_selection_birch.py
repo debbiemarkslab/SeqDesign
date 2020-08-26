@@ -13,7 +13,7 @@ def main():
     parser.add_argument("--threshold", type=float, default=0.575, help="Birch threshold.")
     parser.add_argument("--branching-factor", type=int, default=1000, help="Birch branching factor.")
     parser.add_argument("--batch-size", type=int, default=1000, help="Birch batch size.")
-    parser.add_argument("--r-seed", type=int, default=1000, help="Birch branching factor.")
+    parser.add_argument("--r-seed", type=int, default=42, help="Birch branching factor.")
     args = parser.parse_args()
 
     data_helper = birch.NanobodyDataBirchCluster(
