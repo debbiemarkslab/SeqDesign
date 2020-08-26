@@ -9,6 +9,9 @@ from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.utils.extmath import row_norms
 from sklearn.cluster.birch import NotFittedError, check_is_fitted
 
+# TODO update to use current version of scikit-learn (NotFittedError and check_is_fitted are now part of private API)
+
+
 def _iterate_sparse_X(X):
     """This little hack returns a densified row when iterating over a sparse
     matrix, instead of constructing a sparse matrix for every row that is

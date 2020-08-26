@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from seqdesign import birch
-import sys
 import argparse
 
 
@@ -18,7 +17,7 @@ def main():
 
     data_helper = birch.NanobodyDataBirchCluster(
         input_filename=args.input,
-        minibatch_size=args.minibatch_size,
+        minibatch_size=args.batch_size,
         r_seed=args.r_seed)
 
     birch_inst = birch.BirchIter(threshold=args.threshold, branching_factor=args.branching_factor)
@@ -30,7 +29,6 @@ def main():
     )
 
     print("\nPREDICTING LABELS\n")
-
     birch_inst.predict(data_helper, minibatch_size=args.batch_size, output_name=output_name)
 
 

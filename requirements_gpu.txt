@@ -1,4 +1,5 @@
 tensorflow-gpu>=1.12,<2
 scipy
-scikit-learn
+scikit-learn<0.22
 gitpython
+joblib
