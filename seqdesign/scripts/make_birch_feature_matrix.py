@@ -3,6 +3,7 @@ import re
 import numpy as np
 from joblib import Parallel, delayed
 import argparse
+import math
 
 hydrophobicity_ph2 = {"L":100,
                      "I":100,
@@ -114,11 +115,12 @@ def main():
         if i % 10000 == 0:
             print(i)
         feature_list = [
-            name, len(seq),
-            np.sum([hydrophobicity_ph2[aa] for aa in seq]),
-            np.sum([hydrophobicity_ph7[aa] for aa in seq]),
-            np.sum([pI[aa] for aa in seq]),
-            np.sum([molecular_weight[aa] for aa in seq])
+            name,
+            len(seq),
+            math.fsum(hydrophobicity_ph2[aa] for aa in seq),
+            math.fsum(hydrophobicity_ph7[aa] for aa in seq),
+            math.fsum(pI[aa] for aa in seq),
+            math.fsum(molecular_weight[aa] for aa in seq)
         ]
         # feature_list += [seq.count(kmer) for kmer in kmer_list]
         feature_list += [len(re.findall(kmer, seq)) for kmer in kmer_list]
