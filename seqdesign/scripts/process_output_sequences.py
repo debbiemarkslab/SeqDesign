@@ -158,7 +158,9 @@ def main():
     print("num without sulfur containing amino acids:", num_no_sulfur_containing_amino_acids)
 
     print("New nanobodies:", len(all_functional_sequence_name_to_sequences))
-    with open(ARGS.file_prefix_out+"_unique_nanobodies.fa", "w") as out_f:
+    if ARGS.file_prefix_out != '/dev/null':
+        ARGS.file_prefix_out = ARGS.file_prefix_out+"_unique_nanobodies.fa"
+    with open(ARGS.file_prefix_out, "w") as out_f:
         for name,seq in all_functional_sequence_name_to_sequences.items():
             out_f.write(name+"\n"+seq+"\n")
 
