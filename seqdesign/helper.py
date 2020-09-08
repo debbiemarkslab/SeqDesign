@@ -862,7 +862,6 @@ class DataHelperSingleFamily:
 class DataHelperDoubleWeightingNanobody:
     def __init__(self, alignment_file='', focus_seq_name='',
                  mutation_file='', calc_weights=True, working_dir='.', alphabet_type='protein'):
-
         np.random.seed(42)
         self.alignment_file = alignment_file
         self.focus_seq_name = focus_seq_name
@@ -882,19 +881,6 @@ class DataHelperDoubleWeightingNanobody:
             self.alphabet = 'ACGT*'
             self.reorder_alphabet = 'ACGT*'
 
-        # then generate the experimental data
-        self.gen_alignment_mut_data()
-
-    def one_hot_3D(self, s):
-        # One-hot encode as row vector
-        x = np.zeros((len(s), len(self.alphabet)))
-        for i, letter in enumerate(s):
-            if letter in self.aa_dict:
-                x[i, self.aa_dict[letter]] = 1
-        return x
-
-    def gen_alignment_mut_data(self):
-
         # Make a dictionary that goes from aa to a number for one-hot
         self.aa_dict = {}
         self.idx_to_aa = {}
@@ -905,8 +891,19 @@ class DataHelperDoubleWeightingNanobody:
         # Do the inverse as well
         self.num_to_aa = {i: aa for aa, i in self.aa_dict.items()}
 
-        ix = np.array([self.alphabet.find(s) for s in self.reorder_alphabet])
+        # then generate the experimental data
+        if alignment_file:
+            self.gen_alignment_mut_data()
 
+    def one_hot_3D(self, s):
+        # One-hot encode as row vector
+        x = np.zeros((len(s), len(self.alphabet)))
+        for i, letter in enumerate(s):
+            if letter in self.aa_dict:
+                x[i, self.aa_dict[letter]] = 1
+        return x
+
+    def gen_alignment_mut_data(self):
         self.name_to_sequence = {}
         self.cluster_id80_to_dict_of_cluster_id90_to_sequence_name_lists = {}
         self.cluster_id80_to_dict_of_cluster_id90_to_cluster_size = {}

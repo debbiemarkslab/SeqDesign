@@ -23,7 +23,7 @@ def main():
 
     data_helper = helper.DataHelperDoubleWeightingNanobody(
         working_dir=working_dir,
-        alignment_file="Manglik_filt_seq_id80_id90.fa",
+        alignment_file='',
     )
 
     # Variables for runtime modification
