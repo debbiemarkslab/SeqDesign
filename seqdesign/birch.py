@@ -475,7 +475,7 @@ class BirchIter:
 
         counter = 0
         # Iterate through all the sequences
-        for name,kmer_data_list in data_helper.seq_name_to_kmer_data_lists.iteritems():
+        for name,kmer_data_list in data_helper.seq_name_to_kmer_data_lists.items():
             sample = n_features * [0.]
             for idx_kmer,count in kmer_data_list:
                 sample[idx_kmer] = count
