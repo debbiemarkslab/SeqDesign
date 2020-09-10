@@ -641,7 +641,7 @@ class NanobodyDataBirchCluster:
         self.mu_mw = 15948.323067
         self.sigma_mw = 407.214903436
 
-        cdr3_alphabet = 'ADEFGHIKLNPQRSTVWY'
+        cdr3_alphabet = 'ACDEFGHIKLMNPQRSTVWY'
         kmer_to_idx = {}
         counter = 0
         kmer_list = [aa for aa in cdr3_alphabet]

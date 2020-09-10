@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import re
 import argparse
-import math
 
 hydrophobicity_ph2 = {"L":100,
                      "I":100,
@@ -87,7 +86,7 @@ molecular_weight  = {"A":89.1,
                      "Y":181.19,
                      "V":117.15}
 
-alphabet = 'ADEFGHIKLNPQRSTVWY'  # C and M excluded
+alphabet = 'ACDEFGHIKLMNPQRSTVWY'
 
 kmer_list = [aa for aa in alphabet]
 for aa in alphabet:
