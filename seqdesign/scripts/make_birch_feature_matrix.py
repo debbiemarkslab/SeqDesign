@@ -176,7 +176,6 @@ def make_birch_hash_matrix(input_fa, output_csv):
             else:
                 kmer_counts[kmer] = 1
 
-        del kmer_counts['']
         out_features = feature_list + [f'{key}:{val}' for key, val in kmer_counts.items()]
         return out_features
 
@@ -208,5 +207,8 @@ def main():
         make_birch_hash_matrix(args.input, args.output)
     elif args.output_type == 'matrix':
         make_feature_matrix(args.input, args.output)
+    else:
+        print("Unrecognized output type.")
+        exit(1)
 
 
