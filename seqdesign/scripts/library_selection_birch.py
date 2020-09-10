@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 from seqdesign import birch
 import argparse
+import os
 
 
 def main():
     parser = argparse.ArgumentParser(description="Make a feature matrix for BIRCH clustering from a fasta file.")
     parser.add_argument("--input", type=str, required=True,
-                        help="Input feature matrix csv.")  # '/n/groups/marks/users/adam/nanobody/generation/generate_test_sequences/process_output_sequences/make_feature_matrix/nanobody_id80_temp-1.0_param-nanobody.ckpt-250000unique_nanobodies_feat_matrix.csv'
-    parser.add_argument("--output-prefix", type=str, required=True,
-                        help="Output cluster prefix.")  # 'nanobody_id80_temp-1.0_param-nanobody_18Apr18_1129PM.ckpt-250000unique_nanobodies_feat_matrix.csv'
+                        help="Input feature matrix csv.")
+    parser.add_argument("--output-prefix", type=str, default=None,
+                        help="Output cluster prefix.")
     parser.add_argument("--threshold", type=float, default=0.575, help="Birch threshold.")
     parser.add_argument("--branching-factor", type=int, default=1000, help="Birch branching factor.")
     parser.add_argument("--batch-size", type=int, default=1000, help="Birch batch size.")
@@ -23,6 +24,9 @@ def main():
     birch_inst = birch.BirchIter(threshold=args.threshold, branching_factor=args.branching_factor)
     birch_inst.fit(data_helper)
 
+    if args.output_prefix is None:
+        os.makedirs('clusters')
+        args.output_prefix = args.input.rsplit('/', 1)[-1].rsplit('.', 1)[-1]
     output_name = (
         f"{args.output_prefix}_birch_thresh-{args.threshold}_branch-{args.branching_factor}_"
         f"num_clusters-{birch_inst.num_clusters}.csv"
