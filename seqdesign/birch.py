@@ -617,8 +617,10 @@ class BirchIter:
 
 
 class NanobodyDataBirchCluster:
-    def __init__(self, input_filename='',r_seed=42, n_optimize=100, \
-        minibatch_size=150, contin_feat_num=4):
+    def __init__(
+            self, input_filename='',r_seed=42, n_optimize=100,
+            minibatch_size=150, contin_feat_num=4
+    ):
 
         np.random.seed(r_seed)
 
@@ -700,6 +702,38 @@ class NanobodyDataBirchCluster:
         # first shuffle all the names that will go in the library
         np.random.shuffle(self.seq_name_list)
 
+        # then pick a set of candidates to start with
+        self.lib_names = self.seq_name_list[:n_optimize]
+
+        # the rest are names that are new potential candidates
+        self.option_pool_names = self.seq_name_list[n_optimize:]
+
+        self.kmer_data_arr = np.zeros((n_optimize, len(kmer_list)))
+        self.continuous_data_arr = np.zeros((n_optimize, contin_feat_num))
+
+        for i, name in enumerate(self.lib_names):
+            kmer_data_list = self.seq_name_to_kmer_data_lists[name]
+            contin_data_list = self.seq_name_to_continuous_feat[name]
+            for j, val in enumerate(contin_data_list):
+                self.continuous_data_arr[i, j] = val
+            for j_kmer, count in kmer_data_list:
+                self.kmer_data_arr[i, j_kmer] = count
+
+        # then initialize the minibatch data to zeros for later generation
+        #  Include 1 more to include the thing we are replacing
+        # I don't want to be reinitializing this array over and over again in mem
+        self.minibatch_kmer_data_arr = np.zeros((minibatch_size + 1, len(kmer_list)))
+        self.minibatch_continuous_data_arr = np.zeros((minibatch_size + 1, contin_feat_num))
+        self.library_mask = np.ones((n_optimize,))
+
+        # self.seq_name_to_seq = {}
+        # INPUT = open('nanobody_id80_test_nanobodies_seqs.csv', 'r')
+        # for line in INPUT:
+        #     line = line.rstrip()
+        #     if line[0] == '>':
+        #         name = line
+        #     else:
+        #         self.seq_name_to_seq[name] = line
 
     def gen_minibatch(self, idx_replace):
 
@@ -728,4 +762,3 @@ class NanobodyDataBirchCluster:
                 self.minibatch_continuous_data_arr[i+1,j] = val
             for j_kmer,count in kmer_data_list:
                 self.minibatch_kmer_data_arr[i+1,j_kmer] = count
-

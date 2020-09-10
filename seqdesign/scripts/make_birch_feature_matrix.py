@@ -88,7 +88,7 @@ molecular_weight  = {"A":89.1,
                      "Y":181.19,
                      "V":117.15}
 
-alphabet = 'ADEFGHIKLNPQRSTVWY'
+alphabet = 'ADEFGHIKLNPQRSTVWY'  # C and M excluded
 
 kmer_list = [aa for aa in alphabet]
 for aa in alphabet:
@@ -100,14 +100,8 @@ for aa in alphabet:
 kmer_to_idx = {aa: i for i, aa in enumerate(kmer_list)}
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Make a feature matrix for BIRCH clustering from a fasta file.")
-    parser.add_argument("--input", type=str, required=True, help="Input sequence fasta file.")  # '../nanobody_id80_temp-1.0_param-nanobody_18Apr18_1129PM.ckpt-250000unique_nanobodies.fa'
-    parser.add_argument("--output", type=str, required=True, help="Output feature matrix csv.")  # 'nanobody_id80_temp-1.0_param-nanobody_18Apr18_1129PM.ckpt-250000unique_nanobodies_feat_matrix.csv'
-    parser.add_argument("--num-jobs", type=int, default=12, help="Number of parallel jobs.")
-    args = parser.parse_args()
-
-    header_list = ['length','hydrophobicity_ph2','hydrophobicity_ph7','pI','mw']+kmer_list
+def make_feature_matrix(input_fa, output_csv, num_jobs=4):
+    header_list = ['length', 'hydrophobicity_ph2', 'hydrophobicity_ph7', 'pI', 'mw'] + kmer_list
     name_list = []
     seq_list = []
 
@@ -127,7 +121,7 @@ def main():
         return feature_list
 
     print("Loading sequences")
-    with open(args.input, 'r') as INPUT:
+    with open(input_fa, 'r') as INPUT:
         for i, line in enumerate(INPUT):
             if i > -1:
                 line = line.rstrip()
@@ -138,13 +132,104 @@ def main():
                     name_list.append(name)
                     seq_list.append(line)
 
-    print("Starting parallel for loop")
-    feature_list_of_lists = Parallel(n_jobs=args.num_jobs)(
+    print("Starting parallel for loop", flush=True)
+    feature_list_of_lists = Parallel(n_jobs=num_jobs)(
         delayed(calc_feature_matrix)(i, name_list[i], seq_list[i]) for i in range(len(name_list))
     )
 
     print("Writing feature matrix to file.", flush=True)
-    with open(args.output, 'w') as OUTPUT:
+    with open(output_csv, 'w') as OUTPUT:
         OUTPUT.write(",".join(header_list) + '\n')
         for fl in feature_list_of_lists:
-            OUTPUT.write(",".join([str(val) for val in fl])+'\n')
+            OUTPUT.write(",".join([str(val) for val in fl]) + '\n')
+
+
+def make_birch_hash_matrix(input_fa, output_csv, num_jobs=4):
+    header_list = ['name', 'length', 'hydrophobicity_ph2', 'hydrophobicity_ph7', 'pI', 'mw', 'kmers_idx']
+    name_list = []
+    seq_list = []
+
+    def calc_feature_matrix(i, name, seq):
+        if i % 10000 == 0:
+            print(i, flush=True)
+
+        cdr3 = seq[96:-10]
+        feature_list = [
+            name,
+            len(seq),
+            math.fsum([hydrophobicity_ph2[aa] for aa in seq]),
+            math.fsum([hydrophobicity_ph7[aa] for aa in seq]),
+            math.fsum([pI[aa] for aa in seq]),
+            math.fsum([molecular_weight[aa] for aa in seq]),
+        ]
+        kmer_counts = {}
+
+        kmer_len = 1
+        num_chunks = (len(seq) - kmer_len) + 1
+        for idx in range(0, num_chunks):
+            kmer = cdr3[idx:idx + kmer_len]
+            if kmer in kmer_counts:
+                kmer_counts[kmer] += 1
+            else:
+                kmer_counts[kmer] = 1
+
+        kmer_len = 2
+        num_chunks = (len(seq) - kmer_len) + 1
+        for idx in range(0, num_chunks):
+            kmer = cdr3[idx:idx + kmer_len]
+            if kmer in kmer_counts:
+                kmer_counts[kmer] += 1
+            else:
+                kmer_counts[kmer] = 1
+
+        kmer_len = 3
+        num_chunks = (len(seq) - kmer_len) + 1
+        for idx in range(0, num_chunks):
+            kmer = cdr3[idx:idx + kmer_len]
+            if kmer in kmer_counts:
+                kmer_counts[kmer] += 1
+            else:
+                kmer_counts[kmer] = 1
+
+        del kmer_counts['']
+        out_features = feature_list + [str(key) + ':' + str(val) for key, val in kmer_counts.items()]
+        return out_features
+
+    print("Loading sequences")
+    with open(input_fa, 'r') as INPUT:
+        for i, line in enumerate(INPUT):
+            if i > -1:
+                line = line.rstrip()
+                if line[0] == '>':
+                    name = line[1:]
+
+                else:
+                    name_list.append(name)
+                    seq_list.append(line)
+
+    print("Starting parallel for loop", flush=True)
+    feature_list_of_lists = Parallel(n_jobs=12)(
+        delayed(calc_feature_matrix)(i, name_list[i], seq_list[i]) for i in range(len(name_list))
+    )
+
+    print("Writing feature matrix to file.", flush=True)
+    with open(output_csv, 'w') as OUTPUT:
+        OUTPUT.write(",".join(header_list) + '\n')
+        for feature_list in feature_list_of_lists:
+            OUTPUT.write(",".join([str(val) for val in feature_list]) + '\n')
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Make a feature matrix for BIRCH clustering from a fasta file.")
+    parser.add_argument("--input", type=str, required=True, help="Input sequence fasta file.")  # '../nanobody_id80_temp-1.0_param-nanobody_18Apr18_1129PM.ckpt-250000unique_nanobodies.fa'
+    parser.add_argument("--output", type=str, required=True, help="Output feature matrix csv.")  # 'nanobody_id80_temp-1.0_param-nanobody_18Apr18_1129PM.ckpt-250000unique_nanobodies_feat_matrix.csv'
+    parser.add_argument("--output-type", type=str, default='hash_matrix', choices=('matrix', 'hash_matrix'), help="Output type. {matrix|hash_matrix}")
+    parser.add_argument("--num-jobs", type=int, default=12, help="Number of parallel jobs.")
+    args = parser.parse_args()
+
+    if args.output_type == 'hash_matrix':
+        make_birch_hash_matrix(args.input, args.output, args.num_jobs)
+    elif args.output_type == 'matrix':
+        make_feature_matrix(args.input, args.output, args.num_jobs)
+
+
