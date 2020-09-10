@@ -199,9 +199,12 @@ def make_birch_hash_matrix(input_fa, output_csv):
 def main():
     parser = argparse.ArgumentParser(description="Make a feature matrix for BIRCH clustering from a fasta file.")
     parser.add_argument("--input", type=str, required=True, help="Input sequence fasta file.")  # '../nanobody_id80_temp-1.0_param-nanobody_18Apr18_1129PM.ckpt-250000unique_nanobodies.fa'
-    parser.add_argument("--output", type=str, required=True, help="Output feature matrix csv.")  # 'nanobody_id80_temp-1.0_param-nanobody_18Apr18_1129PM.ckpt-250000unique_nanobodies_feat_matrix.csv'
+    parser.add_argument("--output", type=str, default=None, help="Output feature matrix csv.")  # 'nanobody_id80_temp-1.0_param-nanobody_18Apr18_1129PM.ckpt-250000unique_nanobodies_feat_matrix.csv'
     parser.add_argument("--output-type", type=str, default='hash_matrix', choices=('matrix', 'hash_matrix'), help="Output type. {matrix|hash_matrix}")
     args = parser.parse_args()
+
+    if args.output is None:
+        args.output = args.input.rsplit('.', 1)[0] + '_feat_matrix.csv'
 
     if args.output_type == 'hash_matrix':
         make_birch_hash_matrix(args.input, args.output)
