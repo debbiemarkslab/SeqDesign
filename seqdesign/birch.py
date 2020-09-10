@@ -666,7 +666,7 @@ class NanobodyDataBirchCluster:
         for i,line in enumerate(INPUT):
             if i > 0:
                 line = line.rstrip()
-                line_list = line.split(';')
+                line_list = line.split(',')
                 name = line_list.pop(0)
                 length = (float(line_list.pop(0)) - self.mu_length) / self.sigma_length
                 hydro_ph2 = line_list.pop(0) # this one isn't used
