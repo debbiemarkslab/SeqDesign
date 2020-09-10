@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import re
 import argparse
-import math
 
 hydrophobicity_ph2 = {"L":100,
                      "I":100,
@@ -106,10 +105,10 @@ def make_feature_matrix(input_fa, output_csv):
         feature_list = [
             name,
             len(seq),
-            math.fsum(hydrophobicity_ph2[aa] for aa in seq),
-            math.fsum(hydrophobicity_ph7[aa] for aa in seq),
-            math.fsum(pI[aa] for aa in seq),
-            math.fsum(molecular_weight[aa] for aa in seq)
+            sum(hydrophobicity_ph2[aa] for aa in seq),
+            sum(hydrophobicity_ph7[aa] for aa in seq),
+            sum(pI[aa] for aa in seq),
+            sum(molecular_weight[aa] for aa in seq)
         ]
         # feature_list += [seq.count(kmer) for kmer in kmer_list]
         feature_list += [len(re.findall(kmer, seq)) for kmer in kmer_list]
@@ -142,10 +141,10 @@ def make_birch_hash_matrix(input_fa, output_csv):
         feature_list = [
             name,
             len(seq),
-            math.fsum([hydrophobicity_ph2[aa] for aa in seq]),
-            math.fsum([hydrophobicity_ph7[aa] for aa in seq]),
-            math.fsum([pI[aa] for aa in seq]),
-            math.fsum([molecular_weight[aa] for aa in seq]),
+            sum([hydrophobicity_ph2[aa] for aa in seq]),
+            sum([hydrophobicity_ph7[aa] for aa in seq]),
+            sum([pI[aa] for aa in seq]),
+            sum([molecular_weight[aa] for aa in seq]),
         ]
         kmer_counts = {}
 
