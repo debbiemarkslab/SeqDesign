@@ -26,9 +26,9 @@ def main():
 
     if args.output_prefix is None:
         os.makedirs('clusters')
-        args.output_prefix = args.input.rsplit('/', 1)[-1].rsplit('.', 1)[-1]
+        args.output_prefix = args.input.rsplit('/', 1)[-1].rsplit('.', 1)[0]
     output_name = (
-        f"{args.output_prefix}_birch_thresh-{args.threshold}_branch-{args.branching_factor}_"
+        f"clusters/{args.output_prefix}_birch_thresh-{args.threshold}_branch-{args.branching_factor}_"
         f"num_clusters-{birch_inst.num_clusters}.csv"
     )
 
