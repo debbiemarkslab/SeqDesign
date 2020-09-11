@@ -110,7 +110,6 @@ def make_feature_matrix(input_fa, output_csv):
             round(sum(pI[aa] for aa in seq), 2),
             round(sum(molecular_weight[aa] for aa in seq), 2),
         ]
-        # feature_list += [seq.count(kmer) for kmer in kmer_list]
         feature_list += [len(re.findall(kmer, seq)) for kmer in kmer_list]
         return feature_list
 
@@ -141,10 +140,10 @@ def make_birch_hash_matrix(input_fa, output_csv):
         feature_list = [
             name,
             len(seq),
-            sum([hydrophobicity_ph2[aa] for aa in seq]),
-            sum([hydrophobicity_ph7[aa] for aa in seq]),
-            round(sum([pI[aa] for aa in seq]), 2),
-            round(sum([molecular_weight[aa] for aa in seq]), 2),
+            sum(hydrophobicity_ph2[aa] for aa in seq),
+            sum(hydrophobicity_ph7[aa] for aa in seq),
+            round(sum(pI[aa] for aa in seq), 2),
+            round(sum(molecular_weight[aa] for aa in seq), 2),
         ]
         kmer_counts = {}
 
