@@ -492,8 +492,8 @@ class BirchIter:
                                      n_features=n_features)
                 self.root_.append_subcluster(new_subcluster1)
                 self.root_.append_subcluster(new_subcluster2)
-            if counter % 1000 ==0:
-                print(counter)
+            if counter % 1000 == 0:
+                print(counter, flush=True)
             counter += 1
 
         centroids = np.concatenate([

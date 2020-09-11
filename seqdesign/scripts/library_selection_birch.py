@@ -25,7 +25,7 @@ def main():
     birch_inst.fit(data_helper)
 
     if args.output_prefix is None:
-        os.makedirs('clusters')
+        os.makedirs('clusters', exist_ok=True)
         args.output_prefix = args.input.rsplit('/', 1)[-1].rsplit('.', 1)[0]
     output_name = (
         f"clusters/{args.output_prefix}_birch_thresh-{args.threshold}_branch-{args.branching_factor}_"
