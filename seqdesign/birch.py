@@ -555,8 +555,7 @@ class BirchIter:
                 "Training data and predicted data do "
                 "not have same number of features.")
 
-    def predict(self, data_helper, minibatch_size=1000, \
-        output_name='output.csv'):
+    def predict(self, data_helper, minibatch_size=1000, output_name='output.csv'):
         """
         Predict data using the ``centroids_`` of subclusters.
         Avoid computation of the row norms of X.
@@ -590,8 +589,8 @@ class BirchIter:
             cluster_num = np.argmin(reduced_distance, axis=1)
             cluster_dist = np.min(reduced_distance, axis=1)
 
-            for j,name in enumerate(batch_names):
-                OUTPUT.write(name+','+str(cluster_num[j])+','+str(cluster_dist[j])+'\n')
+            for j, name in enumerate(batch_names):
+                OUTPUT.write(f'{name},{cluster_num[j]},{cluster_dist[j]}\n')
 
             completed += len(batch_names)
             print(completed)

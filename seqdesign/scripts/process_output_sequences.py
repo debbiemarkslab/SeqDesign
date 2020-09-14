@@ -149,21 +149,24 @@ def main():
 
         INPUT.close()
 
-    print("num seqs:", num_seqs)
-    print("num valid endings: ", num_valid_endings)
-    print("num unique seqs:", num_unique_seqs)
-    print("num non-training seqs:", num_non_training_seqs)
-    print("num without glycosylation motifs:", num_no_glycosylation_motifs)
-    print("num without asparagine deamination motifs:", num_no_asparagine_deamination_motifs)
-    print("num without sulfur containing amino acids:", num_no_sulfur_containing_amino_acids)
+    output_sequences_description = f"""num seqs: {num_seqs}
+num valid endings:  {num_valid_endings}
+num unique seqs: {num_unique_seqs}
+num non-training seqs: {num_non_training_seqs}
+num without glycosylation motifs: {num_no_glycosylation_motifs}
+num without asparagine deamination motifs: {num_no_asparagine_deamination_motifs}
+num without sulfur containing amino acids: {num_no_sulfur_containing_amino_acids}
+New nanobodies: {len(all_functional_sequence_name_to_sequences)}
+"""
+    print(output_sequences_description)
 
-    print("New nanobodies:", len(all_functional_sequence_name_to_sequences))
     if ARGS.file_prefix_out != '/dev/null':
         ARGS.file_prefix_out = ARGS.file_prefix_out+"_unique_nanobodies.fa"
     with open(ARGS.file_prefix_out, "w") as out_f:
         for name,seq in all_functional_sequence_name_to_sequences.items():
             out_f.write(name+"\n"+seq+"\n")
-
+    with open(ARGS.file_prefix_out.replace('.fa', '.txt')) as out_f:
+        out_f.write(output_sequences_description)
 
 if __name__ == "__main__":
     main()
