@@ -16,7 +16,7 @@ def main():
     parser.add_argument("--temp", type=float, default=1.0, help="Generation temperature.")
     parser.add_argument("--batch-size", type=int, default=500, help="Number of sequences per generation batch.")
     parser.add_argument("--num-batches", type=int, default=1000000, help="Number of batches to generate.")
-    parser.add_argument("--input-seq", type=str, default='default-nb', help="Path to file with starting sequence.")
+    parser.add_argument("--input-seq", type=str, default='default', help="Path to file with starting sequence.")
     parser.add_argument("--output-prefix", type=str, default='nanobody', help="Prefix for output fasta file.")
 
     args = parser.parse_args()
@@ -52,7 +52,7 @@ def main():
     OUTPUT.close()
 
     # Provide the starting sequence to use for generation
-    if args.input_seq != 'default-nb':
+    if args.input_seq != 'default':
         with open(args.input_seq) as f:
             input_seq = f.read()
         input_seq = "*" + input_seq.strip()
