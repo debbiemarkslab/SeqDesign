@@ -16,6 +16,8 @@ def main():
     parser.add_argument("--temp", type=float, default=1.0, help="Generation temperature.")
     parser.add_argument("--batch-size", type=int, default=500, help="Number of sequences per generation batch.")
     parser.add_argument("--num-batches", type=int, default=1000000, help="Number of batches to generate.")
+    parser.add_argument("--input-seq", type=str, default='default-nb', help="Path to file with starting sequence.")
+    parser.add_argument("--output-prefix", type=str, default='nanobody', help="Prefix for output fasta file.")
 
     args = parser.parse_args()
 
@@ -43,13 +45,19 @@ def main():
         os.makedirs(os.path.join(working_dir, 'generate_sequences', 'generated'))
     output_filename = (
         f"{working_dir}/generate_sequences/generated/"
-        f"{args.sess}_temp-{temp}_param-{sess_name}_rseed-{r_seed}.fa"
+        f"{args.output_prefix}_start-{args.input_seq.split('/')[-1].split('.')[0]}"
+        f"_temp-{temp}_param-{sess_name}_ckpt-{args.checkpoint}_rseed-{r_seed}.fa"
     )
     OUTPUT = open(output_filename, "w")
     OUTPUT.close()
 
     # Provide the starting sequence to use for generation
-    input_seq = "*EVQLVESGGGLVQAGGSLRLSCAASGFTFSSYAMGWYRQAPGKEREFVAAISWSGGSTYYADSVKGRFTISRDNAKNTVYLQMNSLKPEDTAVYYC"
+    if args.input_seq != 'default-nb':
+        with open(args.input_seq) as f:
+            input_seq = f.read()
+        input_seq = "*" + input_seq.strip()
+    else:
+        input_seq = "*EVQLVESGGGLVQAGGSLRLSCAASGFTFSSYAMGWYRQAPGKEREFVAAISWSGGSTYYADSVKGRFTISRDNAKNTVYLQMNSLKPEDTAVYYC"
 
     if args.checkpoint is None:  # look for old-style session file structure
         sess_namedir = f"{working_dir}/sess/{sess_name}"
