@@ -11,8 +11,9 @@ def main():
                         help="Prefix for input files (supports glob).")
     parser.add_argument("--file-prefix-out", type=str, required=True, metavar='P',
                         help="Prefix for output file.")
-    parser.add_argument("--prev-sequences", type=str, required=True, metavar='P',
-                        help="Location of previous nanobody sequences with labeled CDRs")
+    parser.add_argument("--prev-sequences", type=str, default='', metavar='P',
+                        help="Location of previous nanobody sequences with labeled CDRs. "
+                             "Leave blank to disable filtering of previous CDRs")
     parser.add_argument("--cdr3-start", type=int, default=97,
                         help="Start position for nanobody CDR3")
     parser.add_argument("--cdr3-end", type=int, default=11,
@@ -20,7 +21,6 @@ def main():
     ARGS = parser.parse_args()
 
     prev_cdr3s = {}
-    prev_nanobody_data_file = open(ARGS.prev_sequences, "r")
     after_name = True
     after_seq = False
     seq = ""
@@ -49,33 +49,35 @@ def main():
 
         return cdr_seq
 
-    for i,line in enumerate(prev_nanobody_data_file):
-        line = line.rstrip()
-        if line[0] == ">":
-            cdr_seq = get_cdr3_seq(seq,label)
-            prev_cdr3s[cdr_seq] = ""
-            name = line
-            after_name = True
-            after_seq = False
+    if ARGS.prev_sequences:
+        with open(ARGS.prev_sequences, "r") as prev_nanobody_data_file:
+            for i,line in enumerate(prev_nanobody_data_file):
+                line = line.rstrip()
+                if line[0] == ">":
+                    cdr_seq = get_cdr3_seq(seq, label)
+                    prev_cdr3s[cdr_seq] = ""
+                    after_name = True
+                    after_seq = False
 
-        elif after_name == True and after_seq == False:
-            seq = line
-            after_seq = True
-            after_name = False
+                elif after_name and not after_seq:
+                    seq = line
+                    after_seq = True
+                    after_name = False
 
-        elif after_name == False and after_seq == True:
-            label = line
-            after_name = False
-            after_seq = False
+                elif not after_name and after_seq:
+                    label = line
+                    after_name = False
+                    after_seq = False
 
-    prev_nanobody_data_file.close()
-
-    cdr_seq = get_cdr3_seq(seq,label)
+    cdr_seq = get_cdr3_seq(seq, label)
     prev_cdr3s[cdr_seq] = ""
 
     all_functional_sequence_name_to_sequences = {}
     sequence_dict = {}
+    cdr3_complexities_1 = []
+    cdr3_complexities_2 = []
 
+    name = ''
     num_seqs = 0
     num_valid_endings = 0
     num_unique_seqs = 0
@@ -144,7 +146,11 @@ def main():
 
                 if no_glycosylation_motif and no_sulfur_aas and no_asp_deamine_motif and nanobody_seq not in sequence_dict and cdr not in prev_cdr3s:
                     sequence_dict[nanobody_seq] = ""
-                    all_functional_sequence_name_to_sequences[name+"_rseed-"+str(r_seed)] = nanobody_seq
+                    new_name = f"{name}_rseed-{r_seed}"
+                    assert new_name not in all_functional_sequence_name_to_sequences
+                    all_functional_sequence_name_to_sequences[new_name] = nanobody_seq
+                    cdr3_complexities_1.append(sum(cdr[i] == cdr[i+1] for i in range(len(cdr)-1)) / (len(cdr)-1))
+                    cdr3_complexities_2.append(sum(cdr[i] == cdr[i+2] for i in range(len(cdr)-2)) / (len(cdr)-2))
 
         INPUT.close()
 
@@ -154,12 +160,13 @@ def main():
             min_length = len(seq)
         if len(seq) > max_length:
             max_length = len(seq)
-    h = histogram(
+    length_hist = histogram(
         (len(seq) for seq in all_functional_sequence_name_to_sequences.values()),
         minimum=min_length, maximum=max_length, buckets=20
     )
 
-    output_sequences_description = f"""num seqs: {num_seqs}
+    output_sequences_description = f"""{ARGS.file_prefix_in} -> {ARGS.file_prefix_out}
+num seqs: {num_seqs}
 num valid endings:  {num_valid_endings}
 num unique seqs: {num_unique_seqs}
 num non-training seqs: {num_non_training_seqs}
@@ -168,7 +175,11 @@ num without asparagine deamination motifs: {num_no_asparagine_deamination_motifs
 num without sulfur containing amino acids: {num_no_sulfur_containing_amino_acids}
 New nanobodies: {len(all_functional_sequence_name_to_sequences)}
 Length distribution:
-{h}"""
+{length_hist}
+CDR3 complexity order 1 distribution:
+{histogram(cdr3_complexities_1, buckets=10)}
+CDR3 complexity order 2 distribution:
+{histogram(cdr3_complexities_2, buckets=10)}"""
 
     print(output_sequences_description)
 
