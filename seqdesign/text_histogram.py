@@ -187,6 +187,6 @@ def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None
         star_count = 0
         if bucket_count:
             star_count = bucket_count // bucket_scale
-        output.append(f"{bucket_min:10.4f} - {bucket_max:10.4f} [{bucket_count:6d}]: {'∎' * star_count}")
+        output.append(f"{bucket_min:10.4f} - {bucket_max:10.4f} [{bucket_count:8d}]: {'∎' * star_count}")
 
     return '\n'.join(output)

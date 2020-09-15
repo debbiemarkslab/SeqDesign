@@ -156,7 +156,7 @@ def main():
             max_length = len(seq)
     h = histogram(
         (len(seq) for seq in all_functional_sequence_name_to_sequences.values()),
-        minimum=min_length, maximum=max_length, buckets=10
+        minimum=min_length, maximum=max_length, buckets=20
     )
 
     output_sequences_description = f"""num seqs: {num_seqs}
