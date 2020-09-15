@@ -148,13 +148,13 @@ def main():
 
         INPUT.close()
 
-    min_length = max_length = len(next(iter(all_functional_sequence_name_to_sequences.items())))
-    for seq in all_functional_sequence_name_to_sequences.items():
+    min_length = max_length = len(next(iter(all_functional_sequence_name_to_sequences.values())))
+    for seq in all_functional_sequence_name_to_sequences.values():
         if len(seq) < min_length:
             min_length = len(seq)
         if len(seq) > max_length:
             max_length = len(seq)
-    h = histogram(all_functional_sequence_name_to_sequences.items(), minimum=min_length, maximum=max_length, buckets=10)
+    h = histogram(all_functional_sequence_name_to_sequences.values(), minimum=min_length, maximum=max_length, buckets=10)
 
     output_sequences_description = f"""num seqs: {num_seqs}
 num valid endings:  {num_valid_endings}
