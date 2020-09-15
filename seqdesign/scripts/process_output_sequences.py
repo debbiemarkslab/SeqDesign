@@ -2,6 +2,7 @@
 import glob
 import re
 import argparse
+from seqdesign.text_histogram import histogram
 
 
 def main():
@@ -25,7 +26,7 @@ def main():
     seq = ""
     label = ""
 
-    def get_cdr3_seq(seq,label):
+    def get_cdr3_seq(seq, label):
         label_split = label.split("C")
 
         cdr_count = 0
@@ -51,7 +52,6 @@ def main():
     for i,line in enumerate(prev_nanobody_data_file):
         line = line.rstrip()
         if line[0] == ">":
-            #print seq,label
             cdr_seq = get_cdr3_seq(seq,label)
             prev_cdr3s[cdr_seq] = ""
             name = line
@@ -108,7 +108,6 @@ def main():
 
                     valid_ending = True
 
-
                 if "YWGQGTQVTVSS*" in nanobody_seq:
 
                     nanobody_seq_list = list(nanobody_seq)
@@ -149,6 +148,14 @@ def main():
 
         INPUT.close()
 
+    min_length = max_length = len(next(iter(all_functional_sequence_name_to_sequences.items())))
+    for seq in all_functional_sequence_name_to_sequences.items():
+        if len(seq) < min_length:
+            min_length = len(seq)
+        if len(seq) > max_length:
+            max_length = len(seq)
+    h = histogram(all_functional_sequence_name_to_sequences.items(), minimum=min_length, maximum=max_length, buckets=10)
+
     output_sequences_description = f"""num seqs: {num_seqs}
 num valid endings:  {num_valid_endings}
 num unique seqs: {num_unique_seqs}
@@ -157,7 +164,9 @@ num without glycosylation motifs: {num_no_glycosylation_motifs}
 num without asparagine deamination motifs: {num_no_asparagine_deamination_motifs}
 num without sulfur containing amino acids: {num_no_sulfur_containing_amino_acids}
 New nanobodies: {len(all_functional_sequence_name_to_sequences)}
-"""
+Length distribution:
+{h}"""
+
     print(output_sequences_description)
 
     if ARGS.file_prefix_out != '/dev/null':
@@ -165,8 +174,9 @@ New nanobodies: {len(all_functional_sequence_name_to_sequences)}
     with open(ARGS.file_prefix_out, "w") as out_f:
         for name,seq in all_functional_sequence_name_to_sequences.items():
             out_f.write(name+"\n"+seq+"\n")
-    with open(ARGS.file_prefix_out.replace('.fa', '.txt')) as out_f:
+    with open(ARGS.file_prefix_out.replace('.fa', '.txt'), 'w') as out_f:
         out_f.write(output_sequences_description)
+
 
 if __name__ == "__main__":
     main()
