@@ -90,7 +90,7 @@ def test_median():
     assert "4.50" == "%.2f" % median([4.0, 5, 2, 1, 9, 10])  #even-sized float list. (4.0+5)/2 = 4.5
 
 
-def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None, calc_msvd=True):
+def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None, calc_mvsd=True):
     """
     Loop over the stream and add each entry to the dataset, printing out at the end
 
@@ -99,7 +99,7 @@ def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None
     maximum: maximum value for graph
     buckets: Number of buckets to use for the histogram
     custbuckets: Comma seperated list of bucket edges for the histogram
-    calc_msvd: Calculate and display Mean, Variance and SD.
+    calc_mvsd: Calculate and display Mean, Variance and SD.
     """
     if not minimum or not maximum:
         # glob the iterator here so we can do min/max on it
@@ -157,7 +157,7 @@ def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None
     accepted_data = []
     for value in data:
         samples += 1
-        if calc_msvd:
+        if calc_mvsd:
             mvsd.add(value)
             accepted_data.append(value)
         # find the bucket this goes in
@@ -176,7 +176,7 @@ def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None
     output = [f"# NumSamples = {samples}; Min = {min_v:0.2f}; Max = {max_v:0.2f}"]
     if skipped:
         output.append(f"# {skipped} value{skipped > 1 and 's' or ''} outside of min/max")
-    if calc_msvd:
+    if calc_mvsd:
         output.append(f"# Mean = {mvsd.mean()}; Variance = {mvsd.var()}; SD = {mvsd.sd()}; Median {median(accepted_data)}")
     output.append(f"# each ∎ represents a count of {bucket_scale}")
     bucket_max = min_v
@@ -190,3 +190,97 @@ def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None
         output.append(f"{bucket_min:10.4f} - {bucket_max:10.4f} [{bucket_count:8d}]: {'∎' * star_count}")
 
     return '\n'.join(output)
+
+
+class Histogram:
+    def __init__(self, minimum, maximum, buckets=None, custbuckets=None, calc_mvsd=True):
+        """
+        Loop over the stream and add each entry to the dataset, printing out at the end
+
+        minimum: minimum value for graph
+        maximum: maximum value for graph
+        buckets: Number of buckets to use for the histogram
+        custbuckets: Comma seperated list of bucket edges for the histogram
+        calc_mvsd: Calculate and display Mean, Variance and SD.
+        """
+        self.calc_mvsd = calc_mvsd
+        self.min_v = Decimal(minimum)
+        self.max_v = Decimal(maximum)
+
+        if not self.max_v > self.min_v:
+            raise ValueError('max must be > min. max:%s min:%s' % (self.max_v, self.min_v))
+        self.diff = self.max_v - self.min_v
+
+        boundaries = []
+        if custbuckets:
+            bound = custbuckets.split(',')
+            bound_sort = sorted(map(Decimal, bound))
+
+            # if the last value is smaller than the maximum, replace it
+            if bound_sort[-1] < self.max_v:
+                bound_sort[-1] = self.max_v
+
+            # iterate through the sorted list and append to boundaries
+            for x in bound_sort:
+                if self.min_v <= x <= self.max_v:
+                    boundaries.append(x)
+                elif x >= self.max_v:
+                    boundaries.append(self.max_v)
+                    break
+
+            # beware: the self.min_v is not included in the boundaries, so no need to do a -1!
+            bucket_counts = [0 for _ in range(len(boundaries))]
+            buckets = len(boundaries)
+        else:
+            buckets = buckets or 10
+            if buckets <= 0:
+                raise ValueError('# of buckets must be > 0')
+            step = self.diff / buckets
+            bucket_counts = [0 for x in range(buckets)]
+            for x in range(buckets):
+                boundaries.append(self.min_v + (step * (x + 1)))
+
+        self.buckets = buckets
+        self.bucket_counts = bucket_counts
+        self.boundaries = boundaries
+
+        self.skipped = 0
+        self.samples = 0
+        self.mvsd = MVSD()
+
+    def add(self, value):
+        self.samples += 1
+        if self.calc_mvsd:
+            self.mvsd.add(value)
+
+        if value < self.min_v or value > self.max_v:
+            self.skipped += 1
+            return
+        for bucket_postion, boundary in enumerate(self.boundaries):
+            if value <= boundary:
+                self.bucket_counts[bucket_postion] += 1
+                break
+
+    def __str__(self):
+        bucket_scale = 1
+        # auto-pick the hash scale
+        if max(self.bucket_counts) > 75:
+            bucket_scale = int(max(self.bucket_counts) / 75)
+
+        output = [f"# NumSamples = {self.samples}; Min = {self.min_v:0.2f}; Max = {self.max_v:0.2f}"]
+        if self.skipped:
+            output.append(f"# {self.skipped} value{self.skipped > 1 and 's' or ''} outside of min/max")
+        if self.calc_mvsd:
+            output.append(f"# Mean = {self.mvsd.mean()}; Variance = {self.mvsd.var()}; SD = {self.mvsd.sd()}")
+        output.append(f"# each ∎ represents a count of {bucket_scale}")
+        bucket_max = self.min_v
+        for bucket in range(self.buckets):
+            bucket_min = bucket_max
+            bucket_max = self.boundaries[bucket]
+            bucket_count = self.bucket_counts[bucket]
+            star_count = 0
+            if bucket_count:
+                star_count = bucket_count // bucket_scale
+            output.append(f"{bucket_min:10.4f} - {bucket_max:10.4f} [{bucket_count:8d}]: {'∎' * star_count}")
+
+        return '\n'.join(output)
