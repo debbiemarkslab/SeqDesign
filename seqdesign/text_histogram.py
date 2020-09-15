@@ -24,7 +24,6 @@ http://www.pandamatak.com/people/anand/xfer/histo
 http://github.com/bitly/data_hacks
 https://github.com/Kobold/text_histogram
 """
-from decimal import Decimal
 import math
 
 
@@ -32,17 +31,15 @@ class MVSD(object):
     """ A class that calculates a running Mean / Variance / Standard Deviation"""
     def __init__(self):
         self.is_started = False
-        self.ss = Decimal(0)  # (running) sum of square deviations from mean
-        self.m = Decimal(0)  # (running) mean
-        self.total_w = Decimal(0)  # weight of items seen
+        self.ss = 0.0  # (running) sum of square deviations from mean
+        self.m = 0.0  # (running) mean
+        self.total_w = 0.0  # weight of items seen
 
     def add(self, x, w=1):
         """ add another datapoint to the Mean / Variance / Standard Deviation"""
-        if not isinstance(x, Decimal):
-            x = Decimal(x)
         if not self.is_started:
             self.m = x
-            self.ss = Decimal(0)
+            self.ss = 0.0
             self.total_w = w
             self.is_started = True
         else:
@@ -109,11 +106,11 @@ def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None
     bucket_scale = 1
 
     if minimum:
-        min_v = Decimal(minimum)
+        min_v = minimum
     else:
         min_v = min(data)
     if maximum:
-        max_v = Decimal(maximum)
+        max_v = maximum
     else:
         max_v = max(data)
 
@@ -125,7 +122,7 @@ def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None
 
     if custbuckets:
         bound = custbuckets.split(',')
-        bound_sort = sorted(map(Decimal, bound))
+        bound_sort = sorted(map(float, bound))
 
         # if the last value is smaller than the maximum, replace it
         if bound_sort[-1] < max_v:
@@ -204,8 +201,8 @@ class Histogram:
         calc_mvsd: Calculate and display Mean, Variance and SD.
         """
         self.calc_mvsd = calc_mvsd
-        self.min_v = Decimal(minimum)
-        self.max_v = Decimal(maximum)
+        self.min_v = minimum
+        self.max_v = maximum
 
         if not self.max_v > self.min_v:
             raise ValueError('max must be > min. max:%s min:%s' % (self.max_v, self.min_v))
@@ -214,7 +211,7 @@ class Histogram:
         boundaries = []
         if custbuckets:
             bound = custbuckets.split(',')
-            bound_sort = sorted(map(Decimal, bound))
+            bound_sort = sorted(map(float, bound))
 
             # if the last value is smaller than the maximum, replace it
             if bound_sort[-1] < self.max_v:
