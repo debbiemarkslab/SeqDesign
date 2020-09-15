@@ -149,8 +149,14 @@ def main():
                     new_name = f"{name}_rseed-{r_seed}"
                     assert new_name not in all_functional_sequence_name_to_sequences
                     all_functional_sequence_name_to_sequences[new_name] = nanobody_seq
-                    cdr3_complexities_1.add(sum(cdr[i] == cdr[i+1] for i in range(len(cdr)-1)) / (len(cdr)-1))
-                    cdr3_complexities_2.add(sum(cdr[i] == cdr[i+2] for i in range(len(cdr)-2)) / (len(cdr)-2))
+                    cdr3_complexities_1.add(
+                        sum(cdr[i] == cdr[i+1] for i in range(len(cdr)-1)) / (len(cdr)-1)
+                        if len(cdr)-1 > 0 else 0.0
+                    )
+                    cdr3_complexities_2.add(
+                        sum(cdr[i] == cdr[i+2] for i in range(len(cdr)-2)) / (len(cdr)-2)
+                        if len(cdr)-2 > 0 else 0.0
+                    )
 
         INPUT.close()
 
