@@ -32,9 +32,9 @@ class MVSD(object):
     """ A class that calculates a running Mean / Variance / Standard Deviation"""
     def __init__(self):
         self.is_started = False
-        self.ss = Decimal(0) # (running) sum of square deviations from mean
-        self.m = Decimal(0) # (running) mean
-        self.total_w = Decimal(0) # weight of items seen
+        self.ss = Decimal(0)  # (running) sum of square deviations from mean
+        self.m = Decimal(0)  # (running) mean
+        self.total_w = Decimal(0)  # weight of items seen
 
     def add(self, x, w=1):
         """ add another datapoint to the Mean / Variance / Standard Deviation"""
@@ -47,7 +47,7 @@ class MVSD(object):
             self.is_started = True
         else:
             temp_w = self.total_w + w
-            self.ss += (self.total_w * w * (x - self.m) * (x - self.m )) / temp_w
+            self.ss += (self.total_w * w * (x - self.m) * (x - self.m)) / temp_w
             self.m += (x - self.m) / temp_w
             self.total_w = temp_w
 
@@ -62,6 +62,7 @@ class MVSD(object):
     def mean(self):
         return self.m
 
+
 def test_mvsd():
     mvsd = MVSD()
     for x in range(10):
@@ -71,20 +72,22 @@ def test_mvsd():
     assert '%.2f' % mvsd.var() == "8.25"
     assert '%.14f' % mvsd.sd() == "2.87228132326901"
 
+
 def median(values):
     length = len(values)
-    if length%2:
-        median_indeces = [length/2]
+    if length % 2:
+        median_indices = [length//2]
     else:
-        median_indeces = [length/2-1, length/2]
+        median_indices = [length//2-1, length//2]
 
     values = sorted(values)
-    return sum([values[i] for i in median_indeces]) / len(median_indeces)
+    return sum([values[i] for i in median_indices]) / len(median_indices)
+
 
 def test_median():
-    assert 6 == median([8,7,9,1,2,6,3]) # odd-sized list
-    assert 4 == median([4,5,2,1,9,10]) # even-sized int list. (4+5)/2 = 4
-    assert "4.50" == "%.2f" % median([4.0,5,2,1,9,10]) #even-sized float list. (4.0+5)/2 = 4.5
+    assert 6.0 == median([8, 7, 9, 1, 2, 6, 3])  # odd-sized list
+    assert 4.5 == median([4, 5, 2, 1, 9, 10])  # even-sized int list. (4+5)/2 = 4.5
+    assert "4.50" == "%.2f" % median([4.0, 5, 2, 1, 9, 10])  #even-sized float list. (4.0+5)/2 = 4.5
 
 
 def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None, calc_msvd=True):
@@ -119,7 +122,6 @@ def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None
     diff = max_v - min_v
 
     boundaries = []
-    bucket_counts = []
 
     if custbuckets:
         bound = custbuckets.split(',')
@@ -131,14 +133,14 @@ def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None
 
         # iterate through the sorted list and append to boundaries
         for x in bound_sort:
-            if x >= min_v and x <= max_v:
+            if min_v <= x <= max_v:
                 boundaries.append(x)
             elif x >= max_v:
                 boundaries.append(max_v)
                 break
 
         # beware: the min_v is not included in the boundaries, so no need to do a -1!
-        bucket_counts = [0 for x in range(len(boundaries))]
+        bucket_counts = [0 for _ in range(len(boundaries))]
         buckets = len(boundaries)
     else:
         buckets = buckets or 10
@@ -154,17 +156,17 @@ def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None
     mvsd = MVSD()
     accepted_data = []
     for value in data:
-        samples +=1
+        samples += 1
         if calc_msvd:
             mvsd.add(value)
             accepted_data.append(value)
         # find the bucket this goes in
         if value < min_v or value > max_v:
-            skipped +=1
+            skipped += 1
             continue
         for bucket_postion, boundary in enumerate(boundaries):
             if value <= boundary:
-                bucket_counts[bucket_postion] +=1
+                bucket_counts[bucket_postion] += 1
                 break
 
     # auto-pick the hash scale
@@ -184,7 +186,7 @@ def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None
         bucket_count = bucket_counts[bucket]
         star_count = 0
         if bucket_count:
-            star_count = bucket_count / bucket_scale
+            star_count = bucket_count // bucket_scale
         output.append(f"{bucket_min:10.4f} - {bucket_max:10.4f} [{bucket_count:6d}]: {'∎' * star_count}")
 
     return '\n'.join(output)
