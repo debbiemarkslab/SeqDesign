@@ -115,7 +115,7 @@ def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None
         max_v = max(data)
 
     if not max_v > min_v:
-        raise ValueError('max must be > min. max:%s min:%s' % (max_v, min_v))
+        raise ValueError(f'max must be > min. max:{max_v} min:{min_v}')
     diff = max_v - min_v
 
     boundaries = []
@@ -190,6 +190,7 @@ def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None
 
 
 class Histogram:
+    """ A class that calculates a running histogram, mean, variance, and standard deviation"""
     def __init__(self, minimum, maximum, buckets=None, custbuckets=None, calc_mvsd=True):
         """
         Loop over the stream and add each entry to the dataset, printing out at the end
@@ -205,7 +206,7 @@ class Histogram:
         self.max_v = maximum
 
         if not self.max_v > self.min_v:
-            raise ValueError('max must be > min. max:%s min:%s' % (self.max_v, self.min_v))
+            raise ValueError(f'max must be > min. max:{self.max_v} min:{self.min_v}')
         self.diff = self.max_v - self.min_v
 
         boundaries = []

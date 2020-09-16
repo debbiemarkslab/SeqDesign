@@ -74,6 +74,7 @@ def main():
 
     all_functional_sequence_name_to_sequences = {}
     sequence_dict = {}
+    cdr3_lengths = Histogram(minimum=0.0, maximum=40.0, buckets=20)
     cdr3_complexities_1 = Histogram(minimum=0.0, maximum=1.0, buckets=10)
     cdr3_complexities_2 = Histogram(minimum=0.0, maximum=1.0, buckets=10)
 
@@ -149,6 +150,7 @@ def main():
                     new_name = f"{name}_rseed-{r_seed}"
                     assert new_name not in all_functional_sequence_name_to_sequences
                     all_functional_sequence_name_to_sequences[new_name] = nanobody_seq
+                    cdr3_lengths.add(len(cdr))
                     cdr3_complexities_1.add(
                         sum(cdr[i] == cdr[i+1] for i in range(len(cdr)-1)) / (len(cdr)-1)
                         if len(cdr)-1 > 0 else 0.0
@@ -182,9 +184,11 @@ num without sulfur containing amino acids: {num_no_sulfur_containing_amino_acids
 New nanobodies: {len(all_functional_sequence_name_to_sequences)}
 Length distribution:
 {length_hist}
-CDR3 complexity order 1 distribution:
+CDR3 length distribution:
+{cdr3_lengths}
+CDR3 low-complexity order 1 distribution:
 {cdr3_complexities_1}
-CDR3 complexity order 2 distribution:
+CDR3 low-complexity order 2 distribution:
 {cdr3_complexities_2}"""
 
     print(output_sequences_description)
