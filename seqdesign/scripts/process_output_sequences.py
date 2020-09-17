@@ -174,14 +174,14 @@ def main():
     )
 
     output_sequences_description = f"""{ARGS.file_prefix_in} -> {ARGS.file_prefix_out}
-num seqs: {num_seqs}
-num valid endings:  {num_valid_endings}\t({num_valid_endings/num_seqs:%})
-num unique seqs: {num_unique_seqs}\t({num_unique_seqs/num_valid_endings:%})
-num non-training seqs: {num_non_training_seqs}\t({num_non_training_seqs/num_unique_seqs:%})
-num without glycosylation motifs: {num_no_glycosylation_motifs}\t({num_no_glycosylation_motifs/num_non_training_seqs:%})
-num without asparagine deamination motifs: {num_no_asparagine_deamination_motifs}\t({num_no_asparagine_deamination_motifs/num_no_glycosylation_motifs:%})
-num without sulfur containing amino acids: {num_no_sulfur_containing_amino_acids}\t({num_no_sulfur_containing_amino_acids/num_no_asparagine_deamination_motifs:%})
-New nanobodies: {len(all_functional_sequence_name_to_sequences)}\t({len(all_functional_sequence_name_to_sequences)/num_seqs:%})
+num seqs:\t{num_seqs}
+num valid endings:\t{num_valid_endings}\t({num_valid_endings/num_seqs:%})
+num unique seqs:\t{num_unique_seqs}\t({num_unique_seqs/num_valid_endings:%})
+num non-training seqs:\t{num_non_training_seqs}\t({num_non_training_seqs/num_unique_seqs:%})
+num without glycosylation motifs:\t{num_no_glycosylation_motifs}\t({num_no_glycosylation_motifs/num_non_training_seqs:%})
+num without asparagine deamination motifs:\t{num_no_asparagine_deamination_motifs}\t({num_no_asparagine_deamination_motifs/num_no_glycosylation_motifs:%})
+num without sulfur containing amino acids:\t{num_no_sulfur_containing_amino_acids}\t({num_no_sulfur_containing_amino_acids/num_no_asparagine_deamination_motifs:%})
+New nanobodies:\t{len(all_functional_sequence_name_to_sequences)}\t({len(all_functional_sequence_name_to_sequences)/num_seqs:%})
 Length distribution:
 {length_hist}
 CDR3 length distribution:
