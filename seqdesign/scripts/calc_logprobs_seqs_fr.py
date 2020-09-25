@@ -9,6 +9,7 @@ import seqdesign.hyper_conv_auto as model
 from seqdesign import helper
 from seqdesign import utils
 from seqdesign import aws_utils
+from seqdesign.version import VERSION
 
 
 def main():
@@ -26,6 +27,7 @@ def main():
     parser.add_argument("--output", type=str, default='',  help="Directory and filename of the outout data.", required=True)
     parser.add_argument("--alphabet-type", type=str, default='protein', metavar='T',  help="Alphabet to use for the dataset.", required=False)
     parser.add_argument("--s3-path", type=str, default='', help="Base s3:// path (leave blank to disable syncing).")
+    parser.add_argument("--s3-project", type=str, default=VERSION, help="Project name (subfolder of s3-path).")
 
     ARGS = parser.parse_args()
 
@@ -46,7 +48,7 @@ def main():
     print("SeqDesign git hash:", str(utils.get_github_head_hash()))
     print()
 
-    aws_util = aws_utils.AWSUtility(s3_base_path=ARGS.s3_path) if ARGS.s3_path else None
+    aws_util = aws_utils.AWSUtility(s3_project=ARGS.s3_project, s3_base_path=ARGS.s3_path) if ARGS.s3_path else None
     data_helper = helper.DataHelperSingleFamily(
         working_dir=working_dir,
         alphabet_type=ARGS.alphabet_type,
@@ -114,7 +116,7 @@ def main():
     if output_filename.startswith('output/') and aws_util:
         aws_util.s3_cp(
             local_file=output_filename,
-            s3_file=f'calc_logprobs/output/{output_filename.rsplit("/", 1)[1]}',
+            s3_file=f'calc_logprobs/output/{output_filename.replace("output/", "")}',
             destination='s3'
         )
 

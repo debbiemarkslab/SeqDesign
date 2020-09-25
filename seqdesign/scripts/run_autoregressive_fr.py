@@ -6,7 +6,7 @@ from datetime import timedelta
 import sys
 import tensorflow as tf
 import numpy as np
-from seqdesign import version
+from seqdesign.version import VERSION
 from seqdesign import hyper_conv_auto as model
 from seqdesign import helper
 from seqdesign import utils
@@ -19,8 +19,8 @@ def main(working_dir='.'):
     parser = argparse.ArgumentParser(description="Train an autoregressive model on a collection of sequences.")
     parser.add_argument("--s3-path", type=str, default='',
                         help="Base s3:// path (leave blank to disable syncing).")
-    parser.add_argument("--run-version", type=str, default=version.VERSION, metavar='V',
-                        help="Current run version (e.g. v2, v3, etc.).")
+    parser.add_argument("--s3-project", type=str, default=VERSION, metavar='P',
+                        help="Project name (subfolder of s3-path).")
     parser.add_argument("--run-name-prefix", type=str, default=None, metavar='P',
                         help="Prefix for run name.")
     parser.add_argument("--channels", type=int, default=48, metavar='C',
@@ -41,7 +41,6 @@ def main(working_dir='.'):
                         help="Type of data to model. Options = [protein, DNA, RNA]")
     ARGS = parser.parse_args()
 
-    version.VERSION = ARGS.run_version
     if ARGS.gpu != '':
         os.environ["CUDA_VISIBLE_DEVICES"] = ARGS.gpu
     if ARGS.dataset.endswith('.fa'):
@@ -61,7 +60,7 @@ def main(working_dir='.'):
 
     if ARGS.restore == '':
         folder_time = (
-            f"{ARGS.dataset}_{version.VERSION}_channels-{ARGS.channels}"
+            f"{ARGS.dataset}_{ARGS.s3_project}_channels-{ARGS.channels}"
             f"_rseed-{ARGS.r_seed}_{time.strftime('%y%b%d_%I%M%p', time.gmtime())}"
         )
         if ARGS.run_name_prefix is not None:
@@ -214,9 +213,9 @@ def main(working_dir='.'):
     if working_dir != '.':
         os.makedirs(f'{working_dir}/complete/', exist_ok=True)
         OUTPUT = open(f'{working_dir}/complete/{folder_time}.txt', 'w')
-        OUTPUT.write("STEPS COMPLETED:" + str(int(global_step)))
+        OUTPUT.write(f"STEPS COMPLETED: {int(global_step)}")
         if max_gpu_mem_used is not None:
-            OUTPUT.write("Max GPU memory used: " + str(max_gpu_mem_used))
+            OUTPUT.write(f"Max GPU memory used: {max_gpu_mem_used}")
         OUTPUT.close()
 
 

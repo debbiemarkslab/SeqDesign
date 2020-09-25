@@ -6,6 +6,8 @@ import os
 import argparse
 from seqdesign import hyper_conv_auto as model
 from seqdesign import helper
+from seqdesign import aws_utils
+from seqdesign.version import VERSION
 
 
 def main():
@@ -18,8 +20,12 @@ def main():
     parser.add_argument("--num-batches", type=int, default=1000000, help="Number of batches to generate.")
     parser.add_argument("--input-seq", type=str, default='default', help="Path to file with starting sequence.")
     parser.add_argument("--output-prefix", type=str, default='nanobody', help="Prefix for output fasta file.")
+    parser.add_argument("--s3-path", type=str, default='', help="Base s3:// path (leave blank to disable syncing).")
+    parser.add_argument("--s3-project", type=str, default=VERSION, help="Project name (subfolder of s3-path).")
 
     args = parser.parse_args()
+
+    aws_util = aws_utils.AWSUtility(s3_project=args.s3_project, s3_base_path=args.s3_path) if args.s3_path else None
 
     working_dir = "."
 
@@ -41,8 +47,7 @@ def main():
 
     alphabet_list = list(data_helper.alphabet)
 
-    if not os.path.exists(os.path.join(working_dir, 'generate_sequences', 'generated')):
-        os.makedirs(os.path.join(working_dir, 'generate_sequences', 'generated'))
+    os.makedirs(os.path.join(working_dir, 'generate_sequences', 'generated'), exist_ok=True)
     output_filename = (
         f"{working_dir}/generate_sequences/generated/"
         f"{args.output_prefix}_start-{args.input_seq.split('/')[-1].split('.')[0]}"
@@ -161,9 +166,16 @@ def main():
                             out_seq += aa
                         if aa == "*":
                             end_seq = True
-                OUTPUT.write(">"+str(int(batch_size*i+idx_seq))+"\n"+out_seq+"\n")
+                OUTPUT.write(f">{int(batch_size*i+idx_seq)}\n{out_seq}\n")
             OUTPUT.close()
             print(f"Batch {i+1} done in {time.time()-start} s")
+
+    if aws_util:
+        aws_util.s3_cp(
+            local_file=output_filename,
+            s3_file=f'generate_sequences/generated/{output_filename.rsplit("/", 1)[1]}',
+            destination='s3'
+        )
 
 
 if __name__ == "__main__":
