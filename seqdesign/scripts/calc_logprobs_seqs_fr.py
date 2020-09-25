@@ -66,7 +66,7 @@ def main():
     data_helper.read_in_test_data(input_filename)
     print("Read in test data.")
 
-    if ARGS.checkpoint is None:  # look for old-style session file structure
+    if ARGS.checkpoint is None:  # look for old-style flat session file structure
         glob_path = f"{working_dir}/sess/{sess_name}*"
         grep_path = f'{sess_name}.*'
         sess_namedir = f"{working_dir}/sess/{sess_name}"
