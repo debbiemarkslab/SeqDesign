@@ -174,7 +174,7 @@ def main():
                 decoding_steps += 1
 
                 if np.sum(completed_seq_list) == 0.0:
-                    print("completed!")
+                    # print("completed!")
                     complete = True
 
             OUTPUT = open(output_filename, "a")
