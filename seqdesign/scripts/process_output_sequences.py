@@ -86,7 +86,10 @@ def main():
     num_no_glycosylation_motifs = 0
     num_no_asparagine_deamination_motifs = 0
     num_no_sulfur_containing_amino_acids = 0
-    for filename in glob.glob(ARGS.file_prefix_in):
+
+    filenames = glob.glob(ARGS.file_prefix_in)
+    assert len(filenames) > 0
+    for filename in filenames:
         r_seed = filename.split("-")[-1].split(".")[0]
 
         INPUT = open(filename, "r")
@@ -162,7 +165,10 @@ def main():
 
         INPUT.close()
 
-    min_length = max_length = len(next(iter(all_functional_sequence_name_to_sequences.values())))
+    if len(all_functional_sequence_name_to_sequences) > 0:
+        min_length = max_length = len(next(iter(all_functional_sequence_name_to_sequences.values())))
+    else:
+        min_length = max_length = 0
     for seq in all_functional_sequence_name_to_sequences.values():
         if len(seq) < min_length:
             min_length = len(seq)
