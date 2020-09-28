@@ -167,17 +167,17 @@ def main():
 
     if len(all_functional_sequence_name_to_sequences) > 0:
         min_length = max_length = len(next(iter(all_functional_sequence_name_to_sequences.values())))
+        for seq in all_functional_sequence_name_to_sequences.values():
+            if len(seq) < min_length:
+                min_length = len(seq)
+            if len(seq) > max_length:
+                max_length = len(seq)
+        length_hist = histogram(
+            (len(seq) for seq in all_functional_sequence_name_to_sequences.values()),
+            minimum=min_length, maximum=max_length, buckets=20
+        )
     else:
-        min_length = max_length = 0
-    for seq in all_functional_sequence_name_to_sequences.values():
-        if len(seq) < min_length:
-            min_length = len(seq)
-        if len(seq) > max_length:
-            max_length = len(seq)
-    length_hist = histogram(
-        (len(seq) for seq in all_functional_sequence_name_to_sequences.values()),
-        minimum=min_length, maximum=max_length, buckets=20
-    )
+        length_hist = None
 
     output_sequences_description = f"""{ARGS.file_prefix_in} -> {ARGS.file_prefix_out}
 num seqs:\t{num_seqs}
