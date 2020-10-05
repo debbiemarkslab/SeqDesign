@@ -195,7 +195,10 @@ CDR3 length distribution:
 CDR3 low-complexity order 1 distribution:
 {cdr3_complexities_1}
 CDR3 low-complexity order 2 distribution:
-{cdr3_complexities_2}"""
+{cdr3_complexities_2}
+
+num_seqs	valid_endings	unique_seqs	nontraining_seqs	no_glycosylation_seqs	no_deamination_seqs	no_sulfur_seqs	num_out	valid_endings_percent	unique_seqs_percent	nontraining_seqs_percent	no_glycosylation_seqs_percent	no_deamination_seqs_percent	no_sulfur_seqs_percent	num_out_percent	length_mean	length_sd	cdr3_length_mean	cdr3_length_sd	cdr3_lowcomplexity_1_mean	cdr3_lowcomplexity_2_mean
+{num_seqs}	{num_valid_endings}	{num_unique_seqs}	{num_non_training_seqs}	{num_no_glycosylation_motifs}	{num_no_asparagine_deamination_motifs}	{num_no_sulfur_containing_amino_acids}	{num_seqs}	{num_valid_endings/num_seqs:%}	{num_unique_seqs/num_valid_endings:%}	{num_non_training_seqs/num_unique_seqs:%}	{num_no_glycosylation_motifs/num_non_training_seqs:%}	{num_no_asparagine_deamination_motifs/num_no_glycosylation_motifs:%}	{num_no_sulfur_containing_amino_acids/num_no_asparagine_deamination_motifs:%}	{len(all_functional_sequence_name_to_sequences)/num_seqs:%}	{length_hist.mvsd_mean}	{length_hist.mvsd_sd}	{cdr3_lengths.mvsd_mean}	{cdr3_lengths.mvsd_sd}	{cdr3_complexities_1.mvsd_mean}	{cdr3_complexities_2.mvsd_mean}"""
 
     print(output_sequences_description)
 

@@ -25,6 +25,7 @@ http://github.com/bitly/data_hacks
 https://github.com/Kobold/text_histogram
 """
 import math
+from dataclasses import dataclass
 
 
 class MVSD(object):
@@ -170,23 +171,59 @@ def histogram(stream, minimum=None, maximum=None, buckets=None, custbuckets=None
     if max(bucket_counts) > 75:
         bucket_scale = int(max(bucket_counts) / 75)
 
-    output = [f"# NumSamples = {samples}; Min = {min_v:0.2f}; Max = {max_v:0.2f}"]
-    if skipped:
-        output.append(f"# {skipped} value{skipped > 1 and 's' or ''} outside of min/max")
-    if calc_mvsd:
-        output.append(f"# Mean = {mvsd.mean()}; Variance = {mvsd.var()}; SD = {mvsd.sd()}; Median {median(accepted_data)}")
-    output.append(f"# each ∎ represents a count of {bucket_scale}")
-    bucket_max = min_v
-    for bucket in range(buckets):
-        bucket_min = bucket_max
-        bucket_max = boundaries[bucket]
-        bucket_count = bucket_counts[bucket]
-        star_count = 0
-        if bucket_count:
-            star_count = bucket_count // bucket_scale
-        output.append(f"{bucket_min:10.4f} - {bucket_max:10.4f} [{bucket_count:8d}]: {'∎' * star_count}")
+    return HistogramResult(
+        samples=samples,
+        min_v=min_v,
+        max_v=max_v,
+        skipped=skipped,
+        calc_mvsd=calc_mvsd,
+        mvsd_mean=mvsd.mean(),
+        mvsd_var=mvsd.var(),
+        mvsd_sd=mvsd.sd(),
+        mvsd_median=median(accepted_data),
+        bucket_scale=bucket_scale,
+        buckets=buckets,
+        boundaries=boundaries,
+        bucket_counts=bucket_counts
+    )
 
-    return '\n'.join(output)
+
+@dataclass
+class HistogramResult:
+    samples: int
+    min_v: float
+    max_v: float
+    skipped: int
+    calc_mvsd: bool
+    mvsd_mean: float
+    mvsd_var: float
+    mvsd_sd: float
+    mvsd_median: float
+    bucket_scale: int
+    buckets: int
+    boundaries: list
+    bucket_counts: list
+
+
+    def __str__(self):
+        output = [f"# NumSamples = {self.samples}; Min = {self.min_v:0.2f}; Max = {self.max_v:0.2f}"]
+        if self.skipped:
+            output.append(f"# {self.skipped} value{self.skipped > 1 and 's' or ''} outside of min/max")
+        if self.calc_mvsd:
+            output.append(f"# Mean = {self.mvsd_mean}; Variance = {self.mvsd_var}; SD = {self.mvsd_sd}; Median {self.mvsd_median}")
+
+        output.append(f"# each ∎ represents a count of {self.bucket_scale}")
+        bucket_max = self.min_v
+        for bucket in range(self.buckets):
+            bucket_min = bucket_max
+            bucket_max = self.boundaries[bucket]
+            bucket_count = self.bucket_counts[bucket]
+            star_count = 0
+            if bucket_count:
+                star_count = bucket_count // self.bucket_scale
+            output.append(f"{bucket_min:10.4f} - {bucket_max:10.4f} [{bucket_count:8d}]: {'∎' * star_count}")
+
+        return '\n'.join(output)
 
 
 class Histogram:
@@ -258,6 +295,18 @@ class Histogram:
             if value <= boundary:
                 self.bucket_counts[bucket_postion] += 1
                 break
+
+    @property
+    def mvsd_mean(self):
+        return self.mvsd.mean()
+
+    @property
+    def mvsd_var(self):
+        return self.mvsd.var()
+
+    @property
+    def mvsd_sd(self):
+        return self.mvsd.sd()
 
     def __str__(self):
         bucket_scale = 1
