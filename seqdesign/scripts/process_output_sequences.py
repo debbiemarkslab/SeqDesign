@@ -26,6 +26,9 @@ def main():
     seq = ""
     label = ""
 
+    def endswith(s, a):
+        return s[-len(a):] == a
+
     def get_cdr3_seq(seq, label):
         label_split = label.split("C")
 
@@ -101,27 +104,17 @@ def main():
             else:
                 nanobody_seq = line
                 num_seqs += 1
+
+                # get rid of the end character
+                nanobody_seq = nanobody_seq[:-1]
+
                 valid_ending = False
                 # Make sure it has a valid sequence ending
-                if "YWGQGTQVTVS*" in nanobody_seq:
-                    nanobody_seq_list = list(nanobody_seq)
-
-                    # get rid of the end character
-                    nanobody_seq_list.pop()
-
+                if endswith(nanobody_seq, "YWGQGTQVTVS"):
                     # add an extra S at the end so it is consistent
-                    nanobody_seq = "".join(nanobody_seq_list)+"S"
-
+                    nanobody_seq = nanobody_seq+"S"
                     valid_ending = True
-
-                if "YWGQGTQVTVSS*" in nanobody_seq:
-
-                    nanobody_seq_list = list(nanobody_seq)
-
-                    # get rid of the end character
-                    nanobody_seq_list.pop()
-                    nanobody_seq = "".join(nanobody_seq_list)
-
+                elif endswith(nanobody_seq, "YWGQGTQVTVSS"):
                     valid_ending = True
 
                 if not valid_ending:
