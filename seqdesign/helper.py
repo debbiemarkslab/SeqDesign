@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from scipy.special import logsumexp
 import tensorflow as tf
 # import theano
 import scipy
@@ -765,10 +766,12 @@ class DataHelperSingleFamily:
 
     def output_log_probs(self, sess, model, output_filename, num_samples,
                          dropout_p, random_seed, channels, minibatch_size=100, Neff=100., step=200):
+        def logsoftmax(logits, axis=3):
+            return logits - logsumexp(logits, axis=axis, keepdims=True)
+
         def entropy(logits):
-            odds = np.exp(logits)
-            probs = odds / (1 + odds)
-            return - probs * np.log(probs)
+            logprobs = logsoftmax(logits, axis=3)
+            return - np.exp(logprobs) * logprobs
 
         num_seqs = len(self.test_name_list)
 
