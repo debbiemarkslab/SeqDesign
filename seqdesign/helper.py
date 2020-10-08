@@ -765,13 +765,18 @@ class DataHelperSingleFamily:
 
     def output_log_probs(self, sess, model, output_filename, num_samples,
                          dropout_p, random_seed, channels, minibatch_size=100, Neff=100., step=200):
+        def entropy(logits):
+            odds = np.exp(logits)
+            probs = odds / (1 + odds)
+            return - probs * np.log(probs)
 
         num_seqs = len(self.test_name_list)
-        batch_order = np.arange(num_seqs)
 
         self.mean_log_probs_arr = np.zeros((num_seqs, num_samples))
         self.forward_log_probs_arr = np.zeros((num_seqs, num_samples))
         self.reverse_log_probs_arr = np.zeros((num_seqs, num_samples))
+        self.forward_entropy_arr = np.zeros((num_seqs, num_samples))
+        self.reverse_entropy_arr = np.zeros((num_seqs, num_samples))
 
         out_counter = 0
         for idx_iteration in range(num_samples):
@@ -779,6 +784,9 @@ class DataHelperSingleFamily:
             mean_log_probs_list = []
             forward_log_probs_list = []
             reverse_log_probs_list = []
+            forward_entropy_list = []
+            reverse_entropy_list = []
+
             for idx_batch in range(0, num_seqs, minibatch_size):
                 start_time = time.time()
                 batch_seq_name_list = self.test_name_list[idx_batch:idx_batch + minibatch_size]
@@ -822,13 +830,21 @@ class DataHelperSingleFamily:
                              model.placeholders["step"]: [step],
                              model.placeholders["dropout"]: dropout_p}
 
-                ce_loss_f, ce_loss_r = sess.run([model.tensors["cross_entropy_per_seq_f"],
-                                                 model.tensors["cross_entropy_per_seq_r"]], feed_dict=feed_dict)
+                ce_loss_f, ce_loss_r, logits_f, logits_r = sess.run([
+                    model.tensors["cross_entropy_per_seq_f"],
+                    model.tensors["cross_entropy_per_seq_r"],
+                    model.tensors["sequence_logits_f"],
+                    model.tensors["sequence_logits_r"],
+                ], feed_dict=feed_dict)
 
-                mean_log_probs_list += np.mean(np.concatenate(
-                    [np.expand_dims(ce_loss_f, axis=1), np.expand_dims(ce_loss_r, axis=1), ], axis=1), axis=1).tolist()
+                entropy_f = np.sum(entropy(logits_f) * prot_mask_decoder, axis=(1, 2, 3,))
+                entropy_r = np.sum(entropy(logits_r) * prot_mask_decoder, axis=(1, 2, 3,))
+
+                mean_log_probs_list += np.mean(np.stack((ce_loss_f, ce_loss_r)), axis=0).tolist()
                 forward_log_probs_list += ce_loss_f.tolist()
                 reverse_log_probs_list += ce_loss_r.tolist()
+                forward_entropy_list += entropy_f.tolist()
+                reverse_entropy_list += entropy_r.tolist()
                 out_counter += curr_minibatch_size
 
                 if num_samples == 1:
@@ -838,13 +854,17 @@ class DataHelperSingleFamily:
                 self.mean_log_probs_arr[idx_pred, idx_iteration] = mean_log_probs_list[idx_pred]
                 self.forward_log_probs_arr[idx_pred, idx_iteration] = forward_log_probs_list[idx_pred]
                 self.reverse_log_probs_arr[idx_pred, idx_iteration] = reverse_log_probs_list[idx_pred]
+                self.forward_entropy_arr[idx_pred, idx_iteration] = forward_entropy_list[idx_pred]
+                self.reverse_entropy_arr[idx_pred, idx_iteration] = reverse_entropy_list[idx_pred]
 
         self.mean_log_probs_list = np.mean(self.mean_log_probs_arr, axis=1).tolist()
         self.forward_log_probs_list = np.mean(self.forward_log_probs_arr, axis=1).tolist()
         self.reverse_log_probs_list = np.mean(self.reverse_log_probs_arr, axis=1).tolist()
+        self.forward_entropy_list = np.mean(self.forward_entropy_arr, axis=1).tolist()
+        self.reverse_entropy_list = np.mean(self.reverse_entropy_arr, axis=1).tolist()
 
         OUTPUT = open(output_filename, 'w')
-        header_list = ["mean", "bitperchar", "forward", "reverse"]
+        header_list = ["mean", "bitperchar", "forward", "reverse", "entropy_f", "entropy_r"]
         header_list = [val + "-channels_" + str(channels) for val in header_list]
         if random_seed != -1:
             header_list = [val + "-rseed_" + str(random_seed) for val in header_list]
@@ -854,6 +874,7 @@ class DataHelperSingleFamily:
             out_list = [name, self.mean_log_probs_list[i],
                         self.mean_log_probs_list[i] / float(len(self.test_name_to_sequence[name])),
                         self.forward_log_probs_list[i], self.reverse_log_probs_list[i],
+                        self.forward_entropy_list[i], self.reverse_entropy_list[i],
                         self.test_name_to_sequence[name]]
             OUTPUT.write(",".join([str(val) for val in out_list]) + '\n')
         OUTPUT.close()
