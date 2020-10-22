@@ -619,12 +619,13 @@ class BirchIter:
 
 class NanobodyDataBirchCluster:
     def __init__(
-            self, input_filename='',r_seed=42, n_optimize=100,
+            self, input_filename='', r_seed=42, n_optimize=100,
             minibatch_size=150, contin_feat_num=4
     ):
 
         np.random.seed(r_seed)
 
+        self.input_filename = input_filename
         self.minibatch_size = minibatch_size
         self.contin_feat_num = contin_feat_num
         self.n_optimize = n_optimize
@@ -662,7 +663,6 @@ class NanobodyDataBirchCluster:
         self.contin_feat_num = contin_feat_num
         self.kmer_feat_num = len(kmer_list)
 
-        self.input_filename = input_filename
         self.seq_name_list = []
         self.seq_name_to_continuous_feat = {}
         self.seq_name_to_kmer_data_lists = {}
@@ -690,7 +690,7 @@ class NanobodyDataBirchCluster:
                     final_kmer_data_list.append((kmer_to_idx[kmer],float(count)/norm_val))
 
                 self.seq_name_to_kmer_data_lists[name] = final_kmer_data_list
-                self.seq_name_to_continuous_feat[name] = [length,hydro_ph7,pI,mw]
+                self.seq_name_to_continuous_feat[name] = [length, hydro_ph7, pI, mw]
                 self.seq_name_list.append(name)
                 self.seq_name_to_number[name] = i-1
         INPUT.close()
