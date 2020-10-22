@@ -32,7 +32,7 @@ def main():
         f"num_clusters-{birch_inst.num_clusters}.csv"
     )
 
-    print("\nPREDICTING LABELS\n")
+    print("\nPREDICTING LABELS\n", flush=True)
     birch_inst.predict(data_helper, minibatch_size=args.batch_size, output_name=output_name)
 
 

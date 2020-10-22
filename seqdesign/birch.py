@@ -8,6 +8,8 @@ from math import sqrt
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.utils.extmath import row_norms
 
+from seqdesign.text_histogram import MVSD
+
 
 class NotFittedError(ValueError, AttributeError):
     """Exception class to raise if estimator is used before fitting.
@@ -593,7 +595,7 @@ class BirchIter:
                 OUTPUT.write(f'{name},{cluster_num[j]},{cluster_dist[j]}\n')
 
             completed += len(batch_names)
-            print(completed)
+            print(completed, flush=True)
 
         OUTPUT.close()
 
@@ -628,17 +630,10 @@ class NanobodyDataBirchCluster:
         self.n_optimize = n_optimize
         self.seq_name_to_cluster_list = {}
 
-        self.mu_length = 121.84786593
-        self.sigma_length = 2.76134220247
-
-        self.mu_hydro7 = 2956.58952775
-        self.sigma_hydro7 = 152.101027113
-
-        self.mu_pi = 723.26927086
-        self.sigma_pi = 16.6077170428
-
-        self.mu_mw = 15948.323067
-        self.sigma_mw = 407.214903436
+        self.length_mvsd = MVSD()
+        self.hydro7_mvsd = MVSD()
+        self.pi_mvsd = MVSD()
+        self.mw_mvsd = MVSD()
 
         cdr3_alphabet = 'ACDEFGHIKLMNPQRSTVWY'
         kmer_to_idx = {}
@@ -652,49 +647,51 @@ class NanobodyDataBirchCluster:
 
         kmer_to_idx = {aa:i for i,aa in enumerate(kmer_list)}
 
+        with open(self.input_filename, 'r') as INPUT:
+            header = next(INPUT)
+            for line in INPUT:
+                line = line.rstrip()
+                line_list = line.split(',')
+                name = line_list.pop(0)
+                self.length_mvsd.add(float(line_list.pop(0)))
+                hydro_ph2 = line_list.pop(0)  # this one isn't used
+                self.hydro7_mvsd.add(float(line_list.pop(0)))
+                self.pi_mvsd.add(float(line_list.pop(0)))
+                self.mw_mvsd.add(float(line_list.pop(0)))
+
         self.contin_feat_num = contin_feat_num
         self.kmer_feat_num = len(kmer_list)
 
         self.input_filename = input_filename
-        INPUT = open(self.input_filename, 'r')
         self.seq_name_list = []
         self.seq_name_to_continuous_feat = {}
         self.seq_name_to_kmer_data_lists = {}
-        self.lib_names = {}
         self.seq_name_to_number = {}
-        for i,line in enumerate(INPUT):
-            if i > 0:
+        with open(self.input_filename, 'r') as INPUT:
+            header = next(INPUT)
+            for i, line in enumerate(INPUT):
                 line = line.rstrip()
                 line_list = line.split(',')
                 name = line_list.pop(0)
-                length = (float(line_list.pop(0)) - self.mu_length) / self.sigma_length
-                hydro_ph2 = line_list.pop(0) # this one isn't used
-                hydro_ph7 = (float(line_list.pop(0)) - self.mu_hydro7) / self.sigma_hydro7
-                pI = (float(line_list.pop(0)) - self.mu_pi) / self.sigma_pi
-                mw = (float(line_list.pop(0)) - self.mu_mw) / self.sigma_mw
+                length = (float(line_list.pop(0)) - self.length_mvsd.mean()) / self.length_mvsd.sd()
+                hydro_ph2 = line_list.pop(0)  # this one isn't used
+                hydro_ph7 = (float(line_list.pop(0)) - self.hydro7_mvsd.mean()) / self.hydro7_mvsd.sd()
+                pI = (float(line_list.pop(0)) - self.pi_mvsd.mean()) / self.pi_mvsd.sd()
+                mw = (float(line_list.pop(0)) - self.mw_mvsd.mean()) / self.mw_mvsd.sd()
 
                 kmer_data_list = line_list
                 kmer_data_list = [val.split(':') for val in kmer_data_list]
                 final_kmer_data_list = []
-                #print(kmer_data_list)
 
                 # calculate the norm first and save that so I don't have to do it redundantly
-                norm_val = 0.
-                for kmer,count in kmer_data_list:
-                    count = float(count)
-                    norm_val += (count * count)
-                norm_val = np.sqrt(norm_val)
+                norm_val = sqrt(sum(int(count) ** 2 for kmer, count in kmer_data_list))
 
                 for kmer,count in kmer_data_list:
-                    #print(data)
-                    #kmer,count = data
-                    #print(kmer,count)
                     final_kmer_data_list.append((kmer_to_idx[kmer],float(count)/norm_val))
 
                 self.seq_name_to_kmer_data_lists[name] = final_kmer_data_list
                 self.seq_name_to_continuous_feat[name] = [length,hydro_ph7,pI,mw]
                 self.seq_name_list.append(name)
-                self.lib_names[name] = ''
                 self.seq_name_to_number[name] = i-1
         INPUT.close()
 

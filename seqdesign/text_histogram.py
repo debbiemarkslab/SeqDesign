@@ -204,7 +204,6 @@ class HistogramResult:
     boundaries: list
     bucket_counts: list
 
-
     def __str__(self):
         output = [f"# NumSamples = {self.samples}; Min = {self.min_v:0.2f}; Max = {self.max_v:0.2f}"]
         if self.skipped:

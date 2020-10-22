@@ -106,7 +106,7 @@ def main():
                 num_seqs += 1
 
                 # get rid of the end character
-                nanobody_seq = nanobody_seq[:-1]
+                nanobody_seq = nanobody_seq.rstrip("*")
 
                 valid_ending = False
                 # Make sure it has a valid sequence ending
