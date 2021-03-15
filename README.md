@@ -47,6 +47,6 @@ generate_sample_seqs_fr --sess <your_sess>
 
 Run each script with the `-h` argument to see additional arguments.
 
-# Data availability
+## Data availability
 See the [examples](examples) directory to download training sequences,
 mutation effect predictions, and generated sequences.
