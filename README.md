@@ -3,12 +3,13 @@
 SeqDesign is a generative, unsupervised model for biological sequences.
 It is capable of learning functional constraints from unaligned sequences
 in order to predict the effects of mutations and generate novel sequences,
-including insertions and deletions. 
-For more information, check out the [biorxiv preprint](https://doi.org/10.1101/757252).
+including insertions and deletions. For more information, 
+check out the [biorxiv preprint](https://doi.org/10.1101/757252).
 
-This version of the codebase is compatible with Python 3 and Tensorflow 1. 
+This version of the codebase is compatible with Python 3 and Tensorflow 1.  
 For the Python 2.7 version used in the preprint, see the 
-[v2 branch](https://github.com/debbiemarkslab/SeqDesign/tree/v2). 
+[v2 branch](https://github.com/debbiemarkslab/SeqDesign/tree/v2).  
+A PyTorch version is available [here](https://github.com/aaronkollasch/seqdesign-pytorch)
 
 ## Installation
 
@@ -45,3 +46,7 @@ generate_sample_seqs_fr --sess <your_sess>
 ```
 
 Run each script with the `-h` argument to see additional arguments.
+
+# Data availability
+See the [examples](examples) directory to download training sequences,
+mutation effect predictions, and generated sequences.

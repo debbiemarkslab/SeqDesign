@@ -1,12 +1,13 @@
 # SeqDesign Examples
 
-## Downloading example data  
+## Downloading data
+### Example data
 ```shell script
 ./download_example_data.sh
 ```
 
-This script will download the following files for 
-training, mutation prediction, and sequence generation:  
+This script will download the following files for
+training, mutation prediction, and sequence generation:
 
 - `datasets/sequences/BLAT_ECOLX_1_b0.5_lc_weights.fa`
 - `datasets/nanobodies/Manglik_filt_seq_id80_id90.fa`
@@ -15,7 +16,29 @@ training, mutation prediction, and sequence generation:
 - `sess/BLAT_ECOLX_v2_channels-48_rseed-11_19Aug16_0626PM.ckpt-250000*`
 - `sess/nanobody.ckpt-250000*`
 
-## Training the model
+### Training sequences
+```shell script
+./download_sequences.sh
+```
+This script will download all training sequences from the paper
+to `datasets/sequences/` and `datasets/nanobodies/`
+
+### Effect predictions
+```shell script
+./download_effect_predictions.sh
+```
+This script will download all mutation effect predictions
+from the paper to `calc_logprobs/output/`
+
+### Generated sequences
+```shell script
+./download_generated_nanobodies.sh
+```
+This script will download the designed nanobody library to `generated/`
+
+## Running examples
+
+### Training the model
 ```shell script
 ./demo_train.sh
 ```
@@ -27,7 +50,7 @@ The final model checkpoint will appear as three files in
 
 On an AWS p2.xlarge instance, this demonstration took 6 minutes.
 
-## Predicting mutation effects
+### Predicting mutation effects
 ```shell script
 ./demo_calc_logprobs.sh
 ```
@@ -44,7 +67,7 @@ These predictions will appear in
 
 On an AWS p2.xlarge instance, this demonstration took 7 minutes.
 
-## Generating nanobody libraries
+### Generating nanobody libraries
 ```shell script
 ./demo_generate.sh
 ```
