@@ -19,6 +19,7 @@ def main():
     parser.add_argument("--temp", type=float, default=1.0, help="Generation temperature.")
     parser.add_argument("--batch-size", type=int, default=500, help="Number of sequences per generation batch.")
     parser.add_argument("--num-batches", type=int, default=1000000, help="Number of batches to generate.")
+    parser.add_argument("--max-steps", type=int, default=50, help="Maximum number of decoding steps per batch.")
     parser.add_argument("--input-seq", type=str, default='default', help="Path to file with starting sequence.")
     parser.add_argument("--output-prefix", type=str, default='nanobody', help="Prefix for output fasta file.")
     parser.add_argument("--s3-path", type=str, default='', help="Base s3:// path (leave blank to disable syncing).")
@@ -90,9 +91,9 @@ def main():
         ):
             raise Exception("Could not download session files from S3.")
 
-    legacy_verison = model.AutoregressiveFR.get_checkpoint_legacy_version(sess_namedir)
+    legacy_version = model.AutoregressiveFR.get_checkpoint_legacy_version(sess_namedir)
     dims = {'alphabet': len(data_helper.alphabet)}
-    conv_model = model.AutoregressiveFR(dims=dims, legacy_version=legacy_verison)
+    conv_model = model.AutoregressiveFR(dims=dims, legacy_version=legacy_version)
 
     params = tf.trainable_variables()
     p_counts = [np.prod(v.get_shape().as_list()) for v in params]
@@ -127,7 +128,7 @@ def main():
             completed_seq_list = batch_size * [1.]
             decoding_steps = 0
 
-            while not complete and decoding_steps < 50:
+            while not complete and decoding_steps < args.max_steps:
 
                 feed_dict = {
                     conv_model.placeholders["sequences_start_f"]: one_hot_seqs_f,

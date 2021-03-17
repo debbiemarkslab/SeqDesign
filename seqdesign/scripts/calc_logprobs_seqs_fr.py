@@ -83,9 +83,9 @@ def main():
         ):
             raise Exception("Could not download session files from S3.")
 
-    legacy_verison = model.AutoregressiveFR.get_checkpoint_legacy_version(sess_namedir)
+    legacy_version = model.AutoregressiveFR.get_checkpoint_legacy_version(sess_namedir)
     dims = {'alphabet': len(data_helper.alphabet)}
-    conv_model = model.AutoregressiveFR(dims=dims, legacy_version=legacy_verison)
+    conv_model = model.AutoregressiveFR(dims=dims, legacy_version=legacy_version)
 
     params = tf.trainable_variables()
     p_counts = [np.prod(v.get_shape().as_list()) for v in params]

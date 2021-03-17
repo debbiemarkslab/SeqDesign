@@ -96,7 +96,7 @@ def main(working_dir='.'):
 
     tf.set_random_seed(r_seed)
 
-    aws_util = aws_utils.AWSUtility(s3_base_path=ARGS.s3_path) if ARGS.s3_path else None
+    aws_util = aws_utils.AWSUtility(s3_base_path=ARGS.s3_path, s3_project=ARGS.s3_project) if ARGS.s3_path else None
     data_helper = helper.DataHelperSingleFamily(
         working_dir=working_dir, dataset=ARGS.dataset,
         r_seed=r_seed, alphabet_type=ARGS.alphabet_type,
