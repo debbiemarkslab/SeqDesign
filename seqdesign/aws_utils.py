@@ -1,9 +1,6 @@
 import subprocess
 import re
 import os
-from seqdesign.version import VERSION
-
-S3_FOLDER_URL = "s3://markslab-private/seqdesign"
 
 if os.path.exists('/n/groups/marks/software/aws-cli/bin/aws'):
     AWS_BIN = '/n/groups/marks/software/aws-cli/bin/aws'
@@ -12,7 +9,11 @@ else:
 
 
 class AWSUtility:
-    def __init__(self, s3_project=VERSION, s3_base_path=S3_FOLDER_URL):
+    def __init__(self, s3_base_path, s3_project):
+        """
+        :param s3_base_path: S3 URL for target S3 folder, e.g. "s3://my-bucket/my-folder"
+        :param s3_project: Project name, used as sub-folder of the base path, e.g. "v3"
+        """
         self.s3_base_path = s3_base_path
         self.s3_project = s3_project
 
