@@ -14,7 +14,7 @@ class AWSUtility:
         :param s3_base_path: S3 URL for target S3 folder, e.g. "s3://my-bucket/my-folder"
         :param s3_project: Project name, used as sub-folder of the base path, e.g. "v3"
         """
-        self.s3_base_path = s3_base_path
+        self.s3_base_path = s3_base_path.rstrip('/')
         self.s3_project = s3_project
 
     @staticmethod
@@ -50,9 +50,8 @@ class AWSUtility:
             print("Success.")
 
     def s3_sync(self, local_folder, s3_folder, destination='s3', args=()):
-        local_folder = local_folder + ('' if local_folder.endswith('/') else '/')
-        s3_folder = s3_folder + ('' if s3_folder.endswith('/') else '/')
-        s3_folder = f"{self.s3_base_path}/{self.s3_project}/{s3_folder}"
+        local_folder = f"{local_folder.rstrip('/')}/"
+        s3_folder = f"{self.s3_base_path}/{self.s3_project}/{s3_folder.rstrip('/')}/"
         if destination == 's3':
             print("Syncing data to AWS S3.")
             src_folder, dest_folder = local_folder, s3_folder
@@ -65,9 +64,8 @@ class AWSUtility:
             print("Success.")
 
     def s3_get_file_grep(self, s3_folder, dest_folder, search_pattern):
-        s3_folder = s3_folder + ('' if s3_folder.endswith('/') else '/')
-        dest_folder = dest_folder + ('' if dest_folder.endswith('/') else '/')
-        s3_folder = f"{self.s3_base_path}/{self.s3_project}/{s3_folder}"
+        dest_folder = f"{dest_folder.rstrip('/')}/"
+        s3_folder = f"{self.s3_base_path}/{self.s3_project}/{s3_folder.rstrip('/')}/"
         print(f"Finding files in {s3_folder} on AWS S3.")
         cmd = ['s3', 'ls', s3_folder]
         code, std_out, std_err = self.run_cmd(cmd)
