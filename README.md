@@ -17,8 +17,8 @@ See [INSTALL.md](INSTALL.md).
 
 ## Examples
 
-See the [examples](examples) directory.
-
+See the [examples](examples) directory for examples of
+training, mutation effect prediction, and generation.
 
 ## Usage
 
