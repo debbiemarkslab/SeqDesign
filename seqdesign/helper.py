@@ -79,7 +79,10 @@ class DataHelperSingleFamily:
 
         # for now, we will make all the sequences have the same length of
         #   encoded matrices, though this is wasteful
-        filenames = glob.glob(f'{self.working_dir}/datasets/sequences/{self.dataset}*.fa')
+        if os.path.isfile(self.dataset):
+            filenames = [self.dataset]
+        else:
+            filenames = glob.glob(f'{self.working_dir}/datasets/sequences/{self.dataset}*.fa')
         if not filenames and self.aws_util is not None:
             if not self.aws_util.s3_get_file_grep(
                 s3_folder='datasets/sequences',
@@ -100,8 +103,10 @@ class DataHelperSingleFamily:
             decoder_output_sequence_list = []
             weight_list = []
 
-            family_name_list = filename.split('/')[-1].split('_')
-            family_name = family_name_list[0] + '_' + family_name_list[1]
+            family_name = filename.rsplit('/', 1)[-1].rsplit('.', 1)[0]
+            family_name_list = family_name.split('_')
+            if len(family_name_list) >= 2:
+                family_name = family_name_list[0] + '_' + family_name_list[1]
 
             print(f"Family: {family_name}")
 
@@ -110,15 +115,29 @@ class DataHelperSingleFamily:
             first_time = True
             seq = ''
 
+            # check if first sequence header has a sequence weight
+            line = 'start'
+            while line:
+                line = INPUT.readline().rstrip()
+                if line[0] == '>':
+                    break
+            try:
+                weight = float(line.rsplit(':', 1)[-1])
+                uniform_weights = False
+            except ValueError:
+                print(f"No sequence weights detected: {line}\nUsing uniform weights.")
+                uniform_weights = True
+            INPUT.seek(0)
+
             for line in INPUT:
                 line = line.rstrip()
 
                 if line != '':
                     if line[0] == '>' and first_time:
-                        weight = float(line.split(':')[-1])
+                        weight = 1.0 if uniform_weights else float(line.rsplit(':', 1)[-1])
                         first_time = False
 
-                    elif line[0] == '>' and first_time == False:
+                    elif line[0] == '>' and first_time is False:
                         valid = True
                         for letter in seq:
                             if letter not in self.aa_dict:
@@ -135,7 +154,7 @@ class DataHelperSingleFamily:
                                 max_seq_len = len(seq)
 
                         seq = ''
-                        weight = float(line.split(':')[-1])
+                        weight = 1.0 if uniform_weights else float(line.rsplit(':', 1)[-1])
 
                     else:
                         seq += line
