@@ -26,8 +26,10 @@ training, mutation effect prediction, and generation.
 
 Given a fasta file of training sequences, run:
 ```shell script
-run_autoregressive_fr <your_dataset>.fa
+run_autoregressive_fr --dataset <your_dataset>.fa
 ```
+Sequences are uniformly weighted by default. To set sequence
+weights, append `:` and a weight to each fasta header, e.g. `:1.0`.
 
 ### Mutation effect prediction
 Deterministic:
