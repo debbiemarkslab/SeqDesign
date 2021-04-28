@@ -43,8 +43,7 @@ def main(working_dir='.'):
 
     if ARGS.gpu != '':
         os.environ["CUDA_VISIBLE_DEVICES"] = ARGS.gpu
-    if ARGS.dataset.endswith('.fa'):
-        ARGS.dataset = ARGS.dataset[:-3]
+    dataset_name = ARGS.dataset.rsplit('/', 1)[-1].rsplit('.', 1)[0]
 
     if ARGS.restore:
         # prevent from repeating batches/seed when restoring at intermediate point
@@ -60,7 +59,7 @@ def main(working_dir='.'):
 
     if ARGS.restore == '':
         folder_time = (
-            f"{ARGS.dataset}_{ARGS.s3_project}_channels-{ARGS.channels}"
+            f"{dataset_name}_{ARGS.s3_project}_channels-{ARGS.channels}"
             f"_rseed-{ARGS.r_seed}_{time.strftime('%y%b%d_%I%M%p', time.gmtime())}"
         )
         if ARGS.run_name_prefix is not None:
@@ -102,7 +101,7 @@ def main(working_dir='.'):
         r_seed=r_seed, alphabet_type=ARGS.alphabet_type,
         aws_util=aws_util,
     )
-    data_helper.family_name = ARGS.dataset
+    data_helper.family_name = dataset_name
 
     # Variables for runtime modification
     batch_size = 30
