@@ -82,6 +82,8 @@ class DataHelperSingleFamily:
         if os.path.isfile(self.dataset):
             filenames = [self.dataset]
         else:
+            if self.dataset.endswith(".fa"):
+                self.dataset = self.dataset[:-len(".fa")]
             filenames = glob.glob(f'{self.working_dir}/datasets/sequences/{self.dataset}*.fa')
         if not filenames and self.aws_util is not None:
             if not self.aws_util.s3_get_file_grep(

@@ -43,7 +43,11 @@ def main(working_dir='.'):
 
     if ARGS.gpu != '':
         os.environ["CUDA_VISIBLE_DEVICES"] = ARGS.gpu
-    dataset_name = ARGS.dataset.rsplit('/', 1)[-1].rsplit('.', 1)[0]
+    dataset_name = ARGS.dataset.rsplit('/', 1)[-1]
+    if dataset_name.endswith(".fa"):
+        dataset_name = dataset_name[:-len(".fa")]
+    elif dataset_name.endswith(".fasta"):
+        dataset_name = dataset_name[:-len(".fasta")]
 
     if ARGS.restore:
         # prevent from repeating batches/seed when restoring at intermediate point
