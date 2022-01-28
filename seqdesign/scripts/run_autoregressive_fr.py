@@ -201,6 +201,8 @@ def main(working_dir='.'):
                 if working_dir != '.':
                     data_helper.generate_reset_script(
                         f"{folder_time}.ckpt-{global_step}", ARGS.channels, ARGS.dataset, ARGS.r_seed)
+                if aws_util:
+                    aws_util.s3_sync(local_folder=folder, s3_folder=f'sess/_inprogress/{folder_time}/', destination='s3')
         try:
             max_gpu_mem_used = sess.run(tf.contrib.memory_stats.MaxBytesInUse())
         except tf.errors.OpError:
