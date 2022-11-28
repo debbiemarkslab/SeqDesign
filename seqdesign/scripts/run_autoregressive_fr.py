@@ -54,9 +54,11 @@ def main(working_dir='.'):
         # script is repeatable as long as restored at same step
         # assumes restore arg of *.ckpt-(int step)
         restore_ckpt = ARGS.restore.split('.ckpt-')[-1]
-        r_seed = ARGS.r_seed + int(restore_ckpt)
+        first_step = int(restore_ckpt)
+        r_seed = ARGS.r_seed + first_step
         r_seed = r_seed % (2 ** 32 - 1)  # limit of np.random.seed
     else:
+        first_step = 0
         r_seed = ARGS.r_seed
 
     print(ARGS.restore)
@@ -157,7 +159,7 @@ def main(working_dir='.'):
         # Summary output
         merged = tf.summary.merge_all()
         train_writer = tf.summary.FileWriter(folder, sess.graph)
-        global_step = 0
+        global_step = first_step
         print('Created train writer')
 
         # Run optimization
