@@ -140,6 +140,8 @@ def main(working_dir='.'):
     saver = tf.train.Saver()
     run_metadata = tf.RunMetadata()
 
+    error_encountered = False
+
     with tf.Session() as sess:
         # Initialization
         print('Initializing variables')
@@ -205,6 +207,11 @@ def main(working_dir='.'):
                         f"{folder_time}.ckpt-{global_step}", ARGS.channels, ARGS.dataset, ARGS.r_seed)
                 if aws_util:
                     aws_util.s3_sync(local_folder=folder, s3_folder=f'sess/_inprogress/{folder_time}/', destination='s3')
+
+            if not np.isfinite(loss):
+                print("Non-finite loss encountered during training", flush=True)
+                error_encountered = True
+                break
         try:
             max_gpu_mem_used = sess.run(tf.contrib.memory_stats.MaxBytesInUse())
         except tf.errors.OpError:
@@ -216,6 +223,9 @@ def main(working_dir='.'):
     log_f.flush()
     if aws_util:
         aws_util.s3_sync(local_folder=folder, s3_folder=f'sess/{folder_time}/', destination='s3')
+
+    if error_encountered:
+        sys.exit(1)
 
     if working_dir != '.':
         os.makedirs(f'{working_dir}/complete/', exist_ok=True)
